@@ -15,7 +15,7 @@ export default function SignIn({
         Welcome
       </h3>
       <h1 className="text-5xl font-extrabold tracking-tight text-slate-400 sm:text-[5rem]">
-        <span className="text-[#f8e44b]">Monei</span> App
+        <span className="text-[#f8e44b]">Monei</span>
       </h1>
       {Object.values(providers).map((provider) => (
         <div key={provider.name}>

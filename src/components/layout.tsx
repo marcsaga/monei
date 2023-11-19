@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <div className="relative flex w-full flex-row items-center justify-between bg-[hsl(53,100%,70%)] px-8 py-4 shadow-md">
       <h1>
-        <span className="text-[#fafafa]">Monei</span> App
+        <span className="text-[#fafafa]">Monei</span>
       </h1>
       <div className="absolute inset-0 flex h-full w-full items-center justify-center">
         <div className="flex flex-row items-center justify-end gap-4">
@@ -36,6 +36,7 @@ export const Layout = (props: { children: React.ReactNode }) => {
     if (!data) {
       void router.push("/auth/signin");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (!data) return null;

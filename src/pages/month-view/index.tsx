@@ -6,7 +6,7 @@ export default function MonthView() {
     <Layout>
       <div className="container m-auto flex flex-1 flex-col items-center justify-center gap-12 px-4 py-16 ">
         <h1 className="text-5xl font-extrabold tracking-tight text-slate-400 sm:text-[5rem]">
-          <span className="text-[hsl(53,100%,70%)]">Monei</span> App
+          <span className="text-[hsl(53,100%,70%)]">Monei</span>
         </h1>
         <div className="flex flex-col items-center gap-2">
           <div className="flex flex-col items-center justify-center gap-4">
