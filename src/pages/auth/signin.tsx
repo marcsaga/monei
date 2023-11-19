@@ -11,6 +11,9 @@ export default function SignIn({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-gradient-to-b from-[#fafafa] to-[#e3e3e3]">
+      <h3 className="text-2xl font-semibold tracking-tight text-slate-400">
+        Welcome
+      </h3>
       <h1 className="text-5xl font-extrabold tracking-tight text-slate-400 sm:text-[5rem]">
         <span className="text-[#f8e44b]">Monei</span> App
       </h1>
