@@ -9,6 +9,6 @@ export default function Home() {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
   return {
-    redirect: { destination: !session ? "/auth/signin" : "/month-view" },
+    redirect: { destination: !session ? "/auth/signin" : "/overview" },
   };
 }
