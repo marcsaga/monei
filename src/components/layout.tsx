@@ -16,7 +16,7 @@ const NavbarLink = (props: NavbarOptionProps) => {
   return (
     <li>
       <Link
-        className={`flex cursor-pointer items-center gap-3 rounded-lg bg-zinc-100 px-3 py-2 text-zinc-900 transition-all hover:bg-[hsl(53,100%,70%)]/20 ${
+        className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-zinc-900 transition-all hover:bg-[hsl(53,100%,70%)]/20 ${
           isActive ? "bg-[hsl(53,100%,70%)]/20" : ""
         }`}
         href={props.href}
