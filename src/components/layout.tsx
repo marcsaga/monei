@@ -99,12 +99,12 @@ interface PageLayoutProps {
 
 export const PageLayout = ({ title, icon, children }: PageLayoutProps) => {
   return (
-    <div>
+    <div className="flex w-full flex-col overflow-hidden">
       <header className="flex items-center gap-4 border-b p-8">
         <span className="[&>*]:h-8 [&>*]:w-8">{icon}</span>
         <h2 className="text-4xl font-medium">{title}</h2>
       </header>
-      <div className="flex flex-1 flex-col items-center justify-center gap-12 px-4 py-16 ">
+      <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-12 overflow-auto p-16">
         {children}
       </div>
     </div>
