@@ -104,7 +104,7 @@ export const PageLayout = ({ title, icon, children }: PageLayoutProps) => {
         <span className="[&>*]:h-8 [&>*]:w-8">{icon}</span>
         <h2 className="text-4xl font-medium">{title}</h2>
       </header>
-      <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-12 overflow-auto p-16">
+      <div className="flex h-full w-full flex-1 flex-col gap-12 overflow-auto p-16">
         {children}
       </div>
     </div>
