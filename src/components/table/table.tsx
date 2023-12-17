@@ -26,22 +26,55 @@ declare module "@tanstack/react-table" {
 interface TableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
-  onUpdateData: (rowIndex: number, columnId: string, value: unknown) => void;
-  onAddRow: () => void;
+  onUpdateData: (
+    rowIndex: number,
+    columnId: keyof Omit<T, "id">,
+    value: unknown,
+  ) => void;
+  onAddRow: (columnId: keyof Omit<T, "id">, value: unknown) => void;
 }
 
-export function Table<T extends object>({
+interface BaseRow {
+  id: string;
+}
+
+export function Table<T extends Partial<BaseRow>>({
   data,
   columns,
   onUpdateData,
   onAddRow,
 }: TableProps<T>) {
+  const [tableData, setTableData] = React.useState<T[]>(data);
+  const [isAddingRow, setIsAddingRow] = React.useState(false);
+
+  React.useEffect(() => {
+    setTableData(data);
+  }, [data]);
+
   const table = useReactTable<T>({
-    data,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    meta: { updateData: onUpdateData },
+    meta: {
+      updateData: (
+        rowIndex: number,
+        columnId: keyof Omit<T, "id">,
+        value: unknown,
+      ) => {
+        if (rowIndex === tableData.length - 1 && isAddingRow) {
+          onAddRow(columnId, value);
+          setIsAddingRow(false);
+        } else {
+          onUpdateData(rowIndex, columnId, value);
+        }
+      },
+    },
   });
+
+  function handleCreate() {
+    setIsAddingRow(true);
+    setTableData([...tableData, { id: "partial" } as T]);
+  }
 
   return (
     <table className="w-full">
@@ -80,7 +113,7 @@ export function Table<T extends object>({
           <td colSpan={columns.length} className="py-1">
             <button
               className="w-full bg-slate-200 text-left"
-              onClick={onAddRow}
+              onClick={handleCreate}
             >
               Add
             </button>

@@ -17,13 +17,30 @@ export function getInputEditableCell<T extends object>(
     setValue(initialValue);
   }, [initialValue]);
 
+  function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (type === "number") {
+      const number = e.target.valueAsNumber;
+      setValue(Number.isNaN(number) ? null : number);
+      return;
+    }
+    if (type === "date") {
+      setValue(e.target.valueAsDate);
+      return;
+    }
+    setValue(e.target.value);
+  }
+
   return (
     <input
       className={`h-full ${
         type === "date" ? "w-auto" : "w-full"
       } border-none bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
-      value={value as string}
-      onChange={(e) => setValue(e.target.value)}
+      value={
+        value instanceof Date
+          ? value.toISOString().slice(0, 10)
+          : (value as string) ?? ""
+      }
+      onChange={handleOnChange}
       onBlur={onBlur}
       type={type}
     />

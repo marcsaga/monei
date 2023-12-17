@@ -1,12 +1,12 @@
 import { IconShoppingcart } from "~/components/icon";
 import { MainLayout, PageLayout } from "~/components/layout";
-import { Table } from "~/components/table";
+import { ExpenseTable } from "./expense-table";
 
 export default function Expenses() {
   return (
     <MainLayout>
       <PageLayout title="Expenses" icon={<IconShoppingcart />}>
-        <Table />
+        <ExpenseTable />
       </PageLayout>
     </MainLayout>
   );
