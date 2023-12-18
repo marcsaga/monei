@@ -77,14 +77,14 @@ export function Table<T extends Partial<BaseRow>>({
   }
 
   return (
-    <table className="w-full">
-      <thead className="pb-4">
+    <table className="w-full overflow-hidden rounded-lg bg-white shadow">
+      <thead className="py-4">
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
+          <tr key={headerGroup.id} className="bg-gray-100">
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className="border-b-slate-200 bg-slate-200 py-1 text-left"
+                className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
               >
                 {header.isPlaceholder
                   ? null
@@ -99,9 +99,12 @@ export function Table<T extends Partial<BaseRow>>({
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
+          <tr key={row.id} className="hover:bg-gray-50">
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className="py-1">
+              <td
+                key={cell.id}
+                className="whitespace-nowrap [&>*]:px-6 [&>*]:py-4 [&>*]:text-sm [&>*]:font-medium [&>*]:text-gray-900"
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
@@ -109,10 +112,13 @@ export function Table<T extends Partial<BaseRow>>({
         ))}
       </tbody>
       <tfoot>
-        <tr>
-          <td colSpan={columns.length} className="py-1">
+        <tr className="border-t-2 border-gray-100 hover:bg-gray-100">
+          <td
+            colSpan={columns.length}
+            className="px-6 text-xs font-bold text-gray-400"
+          >
             <button
-              className="w-full bg-slate-200 text-left"
+              className="w-full py-3 text-left uppercase"
               onClick={handleCreate}
             >
               Add
