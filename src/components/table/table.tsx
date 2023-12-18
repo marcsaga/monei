@@ -80,11 +80,11 @@ export function Table<T extends Partial<BaseRow>>({
     <table className="w-full overflow-hidden rounded-lg bg-white shadow">
       <thead className="py-4">
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className="bg-gray-100">
+          <tr key={headerGroup.id} className="h-10 bg-gray-100">
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
+                className="px-6 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
               >
                 {header.isPlaceholder
                   ? null
@@ -115,10 +115,10 @@ export function Table<T extends Partial<BaseRow>>({
         <tr className="border-t-2 border-gray-100 hover:bg-gray-100">
           <td
             colSpan={columns.length}
-            className="px-6 text-xs font-bold text-gray-400"
+            className="h-10 px-6 text-xs font-bold text-gray-400"
           >
             <button
-              className="w-full py-3 text-left uppercase"
+              className="h-full w-full text-left uppercase"
               onClick={handleCreate}
             >
               Add
