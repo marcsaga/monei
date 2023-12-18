@@ -10,7 +10,9 @@ export function getInputEditableCell<T extends object>(
   const [value, setValue] = useState(initialValue);
 
   const onBlur = () => {
-    table.options.meta?.updateData(index, id, value);
+    const sendValue =
+      type === "number" && !Number.isNaN(value) ? Number(value) : value;
+    table.options.meta?.updateData(index, id, sendValue);
   };
 
   useEffect(() => {
@@ -19,8 +21,10 @@ export function getInputEditableCell<T extends object>(
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (type === "number") {
-      const number = e.target.valueAsNumber;
-      setValue(Number.isNaN(number) ? null : number);
+      const newValue = e.target.value
+        .replace(/\,/g, ".")
+        .replace(/[^0-9.]|(?<=.\d\d)\d+$/g, "");
+      setValue(newValue);
       return;
     }
     setValue(e.target.value);
@@ -34,7 +38,7 @@ export function getInputEditableCell<T extends object>(
       value={(value as string) ?? ""}
       onChange={handleOnChange}
       onBlur={onBlur}
-      type={type}
+      type={type === "number" ? "text" : type}
     />
   );
 }
