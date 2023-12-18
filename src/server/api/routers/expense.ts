@@ -2,14 +2,22 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const expenseRouter = createTRPCRouter({
-  list: protectedProcedure.input(z.object({})).query(async ({ ctx }) => {
-    const expenses = await ctx.db.expense.findMany({
-      where: { userId: ctx.session.user.id },
-      orderBy: { createdAt: "asc" },
-    });
+  list: protectedProcedure
+    .input(z.object({ start: z.string().nullish(), end: z.string().nullish() }))
+    .query(async ({ ctx, input }) => {
+      const expenses = await ctx.db.expense.findMany({
+        where: {
+          userId: ctx.session.user.id,
+          date: {
+            gte: input.start ? new Date(input.start) : undefined,
+            lte: input.end ? new Date(input.end) : undefined,
+          },
+        },
+        orderBy: { createdAt: "asc" },
+      });
 
-    return expenses.map(fromDTO);
-  }),
+      return expenses.map(fromDTO);
+    }),
 
   create: protectedProcedure
     .input(

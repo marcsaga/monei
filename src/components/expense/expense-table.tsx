@@ -3,6 +3,7 @@
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { getInputEditableCell } from "~/components/table";
 import { Table } from "~/components/table/table";
+import { useExpenseFilters } from "~/pages/expenses";
 import { api } from "~/utils/api";
 
 type Expense = {
@@ -23,15 +24,15 @@ const columns: ColumnDef<Expense, any>[] = [
     cell: (input) => getInputEditableCell<Expense>(input, "number"),
     header: () => <span>Amount (€)</span>,
   }),
-  columnHelper.accessor("date", {
-    header: () => "Date",
-    cell: (input) => getInputEditableCell<Expense>(input, "date"),
-  }),
 ];
 
 export const ExpenseTable = () => {
+  const { filters } = useExpenseFilters();
   const context = api.useContext();
-  const expenseListQuery = api.expense.list.useQuery({}, { staleTime: 60_000 });
+  const expenseListQuery = api.expense.list.useQuery(
+    { start: filters.start, end: filters.end },
+    { staleTime: 60_000 },
+  );
   const expenseCreateMutation = api.expense.create.useMutation({
     onSuccess: () => {
       void context.expense.list.invalidate();
@@ -55,7 +56,10 @@ export const ExpenseTable = () => {
   });
 
   function handleAddRow(columnId: keyof Omit<Expense, "id">, value: unknown) {
-    expenseCreateMutation.mutate({ [columnId]: value } as Partial<Expense>);
+    expenseCreateMutation.mutate({
+      [columnId]: value,
+      date: filters.start,
+    } as Partial<Expense>);
   }
 
   function handleUpdateRow(
