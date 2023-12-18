@@ -23,10 +23,6 @@ export function getInputEditableCell<T extends object>(
       setValue(Number.isNaN(number) ? null : number);
       return;
     }
-    if (type === "date") {
-      setValue(e.target.valueAsDate);
-      return;
-    }
     setValue(e.target.value);
   }
 
@@ -35,11 +31,7 @@ export function getInputEditableCell<T extends object>(
       className={`h-full ${
         type === "date" ? "w-auto" : "w-full"
       } border-none bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
-      value={
-        value instanceof Date
-          ? value.toISOString().slice(0, 10)
-          : (value as string) ?? ""
-      }
+      value={(value as string) ?? ""}
       onChange={handleOnChange}
       onBlur={onBlur}
       type={type}

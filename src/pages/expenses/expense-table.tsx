@@ -9,7 +9,7 @@ type Expense = {
   id: string;
   description?: string;
   amount?: number;
-  date?: Date;
+  date?: string;
 };
 
 const columnHelper = createColumnHelper<Expense>();
@@ -31,17 +31,7 @@ const columns: ColumnDef<Expense, any>[] = [
 
 export const ExpenseTable = () => {
   const context = api.useContext();
-  const expenseListQuery = api.expense.list.useQuery(
-    {},
-    {
-      staleTime: 60_000,
-      select: (data) =>
-        data.map((row) => ({
-          ...row,
-          date: row.date ? new Date(row.date) : undefined,
-        })) ?? [],
-    },
-  );
+  const expenseListQuery = api.expense.list.useQuery({}, { staleTime: 60_000 });
   const expenseCreateMutation = api.expense.create.useMutation({
     onSuccess: () => {
       void context.expense.list.invalidate();

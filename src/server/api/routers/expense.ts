@@ -16,7 +16,10 @@ export const expenseRouter = createTRPCRouter({
       z.object({
         amount: z.number().nullish(),
         description: z.string().nullish(),
-        date: z.date().nullish(),
+        date: z
+          .string()
+          .refine((val) => /\d{4}(-\d{2}){2}/g.test(val))
+          .nullish(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -25,7 +28,7 @@ export const expenseRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           amount: input.amount,
           description: input.description,
-          date: input.date,
+          date: input.date ? new Date(input.date) : undefined,
         },
       });
 
@@ -38,7 +41,10 @@ export const expenseRouter = createTRPCRouter({
         id: z.string(),
         amount: z.number().nullish(),
         description: z.string().nullish(),
-        date: z.date().nullish(),
+        date: z
+          .string()
+          .refine((val) => /\d{4}(-\d{2}){2}/g.test(val))
+          .nullish(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -47,7 +53,7 @@ export const expenseRouter = createTRPCRouter({
         data: {
           amount: input.amount,
           description: input.description,
-          date: input.date,
+          date: input.date ? new Date(input.date) : undefined,
         },
       });
 
@@ -68,6 +74,6 @@ function fromDTO(dto: ExpenseDTO) {
     id: dto.id,
     amount: dto.amount ?? undefined,
     description: dto.description ?? undefined,
-    date: dto.date ?? undefined,
+    date: dto.date?.toISOString().slice(0, 10) ?? undefined,
   };
 }
