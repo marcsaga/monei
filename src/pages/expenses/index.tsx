@@ -1,6 +1,6 @@
 import { IconShoppingcart } from "~/components/icon";
 import { MainLayout, PageLayout } from "~/components/layout";
-import { ExpenseTable } from "../../components/expense/expense-table";
+import { ExpenseTable } from "../../components/table/shared/expense-table";
 import { ArrowFilter } from "~/components/arrow-filter";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -12,17 +12,19 @@ export default function Expenses() {
   return (
     <MainLayout>
       <PageLayout title="Expenses" icon={<IconShoppingcart />}>
-        <ArrowFilter
-          currentFilter={getMonthName(new Date(filters.start))}
-          onArrowClick={handleOnMonthChange}
-        />
-        <ExpenseTable />
+        <div className="grid gap-10">
+          <ArrowFilter
+            currentFilter={getMonthName(new Date(filters.start))}
+            onArrowClick={handleOnMonthChange}
+          />
+          <ExpenseTable />
+        </div>
       </PageLayout>
     </MainLayout>
   );
 }
 
-export function useExpenseFilters() {
+export const useExpenseFilters = () => {
   const router = useRouter();
 
   function handleOnMonthChange(direction: 1 | -1) {
@@ -47,7 +49,7 @@ export function useExpenseFilters() {
     },
     handleOnMonthChange,
   };
-}
+};
 
 function generateMonthlyFilter(date: Date) {
   const year = date.getFullYear();
@@ -55,10 +57,7 @@ function generateMonthlyFilter(date: Date) {
   const startDate = new Date(year, month, 1);
   const endDate = new Date(year, month + 1, 0);
 
-  return {
-    start: dayFromDate(startDate),
-    end: dayFromDate(endDate),
-  };
+  return { start: dayFromDate(startDate), end: dayFromDate(endDate) };
 }
 
 const initialFilters = {

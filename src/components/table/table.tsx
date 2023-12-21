@@ -77,7 +77,7 @@ export function Table<T extends Partial<BaseRow>>({
   }
 
   return (
-    <table className="w-full overflow-hidden rounded-lg bg-white shadow">
+    <table className="w-full rounded-lg bg-white shadow">
       <thead className="py-4">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className="h-10 bg-gray-100">
