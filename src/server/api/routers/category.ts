@@ -25,6 +25,14 @@ export const categoryRouter = createTRPCRouter({
       });
       return categories.map(fromDTO);
     }),
+
+  deleteCategory: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.category.delete({
+        where: { id: input.id },
+      });
+    }),
 });
 
 interface CategoryDTO {

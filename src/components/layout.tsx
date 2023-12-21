@@ -84,7 +84,7 @@ export const MainLayout = (props: { children: React.ReactNode }) => {
   if (!data) return null;
 
   return (
-    <main className="grid h-screen min-h-screen w-full md:grid-cols-[280px_1fr]">
+    <main className="grid h-screen min-h-screen w-full md:grid-cols-[220px_1fr]">
       <Navbar />
       {props.children}
     </main>

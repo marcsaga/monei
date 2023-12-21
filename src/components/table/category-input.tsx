@@ -11,7 +11,7 @@ function useListCategories(type: "expense" | "income") {
 }
 
 export type CategoryInputUpdateData =
-  | { type: "update"; id: string }
+  | { type: "update"; id: string | null }
   | { type: "create"; color: CategoryColor; name: string };
 
 export function getCategoryInputCell<T extends object>(
@@ -22,9 +22,18 @@ export function getCategoryInputCell<T extends object>(
   const [activeCategory, setActiveCategory] = useState(selectedCategory);
   const [newCategory, setNewCategory] = useState("");
   const [showSelector, setShowSelector] = useState(false);
+
   const dropdownRootRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+
   const { data } = useListCategories(type);
+  const context = api.useContext();
+  const deleteCategory = api.category.deleteCategory.useMutation({
+    onSuccess: () => {
+      void context.category.listExpenseCategories.invalidate();
+      void context.expense.list.invalidate();
+    },
+  });
 
   useClickOutside(dropdownRootRef, () => setShowSelector(false));
 
@@ -32,11 +41,20 @@ export function getCategoryInputCell<T extends object>(
     setNewCategory(e.target.value);
   }
 
+  function onCloseCategory() {
+    table.options.meta?.updateData(index, id, { type: "update", id: null });
+    setActiveCategory(undefined);
+  }
+
   function onSelectCategory(tagId: string) {
     const category = data?.find((c) => c.id === tagId);
     setActiveCategory(category);
     table.options.meta?.updateData(index, id, { type: "update", id: tagId });
     setShowSelector(false);
+  }
+
+  function onDeleteCategory(id: string) {
+    deleteCategory.mutate({ id });
   }
 
   useEffect(() => {
@@ -86,9 +104,7 @@ export function getCategoryInputCell<T extends object>(
         >
           <div className="flex h-10 items-center border-b border-gray-100 bg-gray-200 px-4">
             {activeCategory ? (
-              <button onClick={() => setActiveCategory(undefined)}>
-                <TagComponent {...activeCategory} />
-              </button>
+              <TagComponent {...activeCategory} onClose={onCloseCategory} />
             ) : (
               <input
                 ref={inputRef}
@@ -108,7 +124,10 @@ export function getCategoryInputCell<T extends object>(
                 className="cursor-pointer px-4 py-1 hover:bg-gray-100"
                 onClick={() => onSelectCategory(tag.id)}
               >
-                <TagComponent {...tag} />
+                <TagComponent
+                  {...tag}
+                  onClose={() => onDeleteCategory(tag.id)}
+                />
               </li>
             ))}
           </ul>
