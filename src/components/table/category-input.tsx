@@ -5,6 +5,7 @@ import { TagComponent, generateTagColor } from "../tag";
 import { useClickOutside } from "~/hooks/use-click-outside";
 import { api } from "~/utils/api";
 import { type CategoryColor, type Category } from "~/utils/interfaces";
+import { CrossIcon } from "../icon";
 
 function useListCategories(type: "expense" | "income") {
   return api.category.listExpenseCategories.useQuery({ staleTime: 60_000 });
@@ -121,13 +122,18 @@ export function getCategoryInputCell<T extends object>(
             {data?.map((tag) => (
               <li
                 key={tag.id}
-                className="cursor-pointer px-4 py-1 hover:bg-gray-100"
+                className="flex cursor-pointer items-center justify-between px-4 py-1 hover:bg-gray-100"
                 onClick={() => onSelectCategory(tag.id)}
               >
-                <TagComponent
-                  {...tag}
-                  onClose={() => onDeleteCategory(tag.id)}
-                />
+                <TagComponent {...tag} />
+                <button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDeleteCategory(tag.id);
+                  }}
+                >
+                  <CrossIcon className="h-3 w-3" />
+                </button>
               </li>
             ))}
           </ul>

@@ -1,6 +1,5 @@
 import { colors, type CategoryColor } from "~/utils/interfaces";
 import { CrossIcon } from "./icon";
-import { type MouseEvent } from "react";
 
 interface TagComponentProps {
   name: string;
@@ -21,18 +20,13 @@ export const TagComponent = ({ name, color, onClose }: TagComponentProps) => {
     gray: "bg-gray-200",
   };
 
-  function handleOnClose(event: MouseEvent<HTMLButtonElement>) {
-    event.stopPropagation();
-    onClose?.();
-  }
-
   return (
     <span
-      className={`group flex w-min items-center gap-1 rounded-sm px-1 py-1 text-xs font-semibold text-gray-500 ${colorMap[color]}`}
+      className={`flex w-min items-center gap-1 rounded-sm px-1 py-1 text-xs font-semibold text-gray-500 ${colorMap[color]}`}
     >
       {name}
       {onClose && (
-        <button onClick={handleOnClose} className="hidden group-hover:block">
+        <button onClick={onClose}>
           <CrossIcon className="h-3 w-3" />
         </button>
       )}
