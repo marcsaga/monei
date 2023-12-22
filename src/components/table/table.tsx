@@ -109,10 +109,14 @@ export function Table<T extends Partial<BaseRow>>({
         />
       ) : null}
       <table className="w-full rounded-lg bg-white shadow">
+        <colgroup>
+          <col className="w-10" />
+          <col className="w-2/5" />
+        </colgroup>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="h-10 bg-gray-100">
-              <th className="group w-10">
+              <th className="group">
                 <Checkbox
                   checked={isSomeRowSelected}
                   className={`${
@@ -127,11 +131,10 @@ export function Table<T extends Partial<BaseRow>>({
                   key={header.id}
                   className="px-6 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
                 >
-                  {header.isPlaceholder &&
-                    flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
                 </th>
               ))}
             </tr>
