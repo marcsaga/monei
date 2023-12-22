@@ -15,7 +15,7 @@ const columnHelper = createColumnHelper<Expense>();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: ColumnDef<Expense, any>[] = [
   columnHelper.accessor("description", {
-    header: () => "Description",
+    header: () => <span>Description</span>,
     cell: (input) => getInputEditableCell<Expense>(input, "text"),
   }),
   columnHelper.accessor("amount", {
@@ -41,6 +41,14 @@ export const ExpenseTable = () => {
   });
   const updateExpenseeMutation = api.expense.update.useMutation({
     onSuccess: () => void context.expense.list.invalidate(),
+  });
+  const deleteExpenseMutation = api.expense.delete.useMutation({
+    onSuccess: () => void context.expense.list.invalidate(),
+    onMutate: ({ ids }) =>
+      context.expense.list.setData(
+        { start: filters.start, end: filters.end },
+        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
+      ),
   });
   const createCategoryMutation = api.category.createExpenseCategory.useMutation(
     {
@@ -85,12 +93,17 @@ export const ExpenseTable = () => {
     });
   }
 
+  function handleDeleteRows(rowIds: string[]) {
+    deleteExpenseMutation.mutate({ ids: rowIds });
+  }
+
   return (
     <Table
       data={expenseListQuery.data ?? []}
       columns={columns}
       onUpdateData={handleUpdateRow}
       onAddRow={handleAddRow}
+      onDeleteRows={handleDeleteRows}
     />
   );
 };

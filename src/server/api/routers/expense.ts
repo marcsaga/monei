@@ -75,6 +75,12 @@ export const expenseRouter = createTRPCRouter({
 
       return fromDTO(expense);
     }),
+
+  delete: protectedProcedure
+    .input(z.object({ ids: z.array(z.string()) }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.expense.deleteMany({ where: { id: { in: input.ids } } });
+    }),
 });
 
 interface ExpenseDTO {

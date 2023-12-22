@@ -6,9 +6,19 @@ import { useClickOutside } from "~/hooks/use-click-outside";
 import { api } from "~/utils/api";
 import { type CategoryColor, type Category } from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
+import { useExpenseFilters } from "~/pages/expenses";
 
 function useListCategories(type: "expense" | "income") {
-  return api.category.listExpenseCategories.useQuery({ staleTime: 60_000 });
+  return api.category.listExpenseCategories.useQuery({}, { staleTime: 60_000 });
+}
+
+function useCurrentViewFilters(type: "expense" | "income") {
+  return useExpenseFilters();
+}
+
+function useCurrentListContext(type: "expense" | "income") {
+  const context = api.useContext();
+  return context.expense.list;
 }
 
 export type CategoryInputUpdateData =
@@ -28,11 +38,28 @@ export function getCategoryInputCell<T extends object>(
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { data } = useListCategories(type);
+  const { filters } = useCurrentViewFilters(type);
+  const listContext = useCurrentListContext(type);
   const context = api.useContext();
+
   const deleteCategory = api.category.deleteCategory.useMutation({
+    onMutate: ({ id }) => {
+      context.category.listExpenseCategories.setData(
+        {},
+        (prev) => prev?.filter((category) => category.id !== id),
+      );
+      listContext.setData(
+        filters,
+        (prev) =>
+          prev?.map((obj) => ({
+            ...obj,
+            category: obj.category?.id === id ? undefined : obj.category,
+          })),
+      );
+    },
     onSuccess: () => {
       void context.category.listExpenseCategories.invalidate();
-      void context.expense.list.invalidate();
+      void listContext.invalidate();
     },
   });
 
@@ -87,6 +114,7 @@ export function getCategoryInputCell<T extends object>(
     return () => {
       removeEventListener("keydown", onEnter);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputRef, newCategory]);
 
   return (
