@@ -39,11 +39,13 @@ export const ExpenseTable = () => {
   const createExpenseMutation = api.expense.create.useMutation({
     onSuccess: () => void context.expense.list.invalidate(),
   });
-  const updateExpenseeMutation = api.expense.update.useMutation({
-    onSuccess: () => void context.expense.list.invalidate(),
-  });
+  const updateExpenseMutation = api.expense.update.useMutation();
   const deleteExpenseMutation = api.expense.delete.useMutation({
-    onSuccess: () => void context.expense.list.invalidate(),
+    onSuccess: (_, { ids }) =>
+      context.expense.list.setData(
+        filters,
+        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
+      ),
     onMutate: ({ ids }) =>
       context.expense.list.setData(
         { start: filters.start, end: filters.end },
@@ -87,7 +89,7 @@ export const ExpenseTable = () => {
     if (currentExpenseValue === updateValue) {
       return;
     }
-    updateExpenseeMutation.mutate({
+    updateExpenseMutation.mutate({
       id: expense.id,
       [columnId === "category" ? "categoryId" : columnId]: updateValue,
     });
