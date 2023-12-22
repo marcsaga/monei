@@ -22,7 +22,7 @@ export const TagComponent = ({ name, color, onClose }: TagComponentProps) => {
 
   return (
     <span
-      className={`flex w-min items-center gap-1 rounded-sm px-1 py-1 text-xs font-semibold text-gray-500 ${colorMap[color]}`}
+      className={`flex w-min items-center gap-1 rounded-sm px-1 py-[2px] text-xs font-semibold text-gray-500 ${colorMap[color]}`}
     >
       {name}
       {onClose && (
