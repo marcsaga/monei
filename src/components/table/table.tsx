@@ -53,17 +53,18 @@ export function Table<T extends Partial<BaseRow>>({
   const [tableData, setTableData] = React.useState<T[]>(data);
   const [isAddingRow, setIsAddingRow] = React.useState(false);
   const rootRef = React.useRef<HTMLDivElement>(null);
-  const refRowAdded = React.useRef(false);
+  const isAddingRowState = React.useRef<"adding" | "added">();
 
   useClickOutside(rootRef, handleOnClickOutside);
   async function handleOnClickOutside() {
     await new Promise((resolve) => setTimeout(resolve, 1_000));
-    if (refRowAdded.current) {
-      refRowAdded.current = false;
+    if (isAddingRowState.current === "added") {
+      isAddingRowState.current = undefined;
       return;
+    } else if (isAddingRowState.current === "adding") {
+      setTableData((prev) => prev.filter((row) => row.id !== "new"));
+      setIsAddingRow(false);
     }
-    setTableData(tableData.filter((row) => row.id !== "new"));
-    setIsAddingRow(false);
   }
 
   React.useEffect(() => {
@@ -74,6 +75,7 @@ export function Table<T extends Partial<BaseRow>>({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: (originalRow, index) => originalRow.id ?? index.toString(),
     meta: {
       updateData: (
         rowIndex: number,
@@ -83,7 +85,7 @@ export function Table<T extends Partial<BaseRow>>({
         if (rowIndex === tableData.length - 1 && isAddingRow) {
           if (value) onAddRow(columnId, value);
           setIsAddingRow(false);
-          refRowAdded.current = true;
+          isAddingRowState.current = "added";
         } else {
           onUpdateData(rowIndex, columnId, value);
         }
@@ -93,6 +95,7 @@ export function Table<T extends Partial<BaseRow>>({
 
   function handleAddRow() {
     setIsAddingRow(true);
+    isAddingRowState.current = "adding";
     setTableData([...tableData, { id: "new" } as T]);
   }
 
@@ -110,7 +113,7 @@ export function Table<T extends Partial<BaseRow>>({
   function handleDeleteRows() {
     const rowIds = table
       .getSelectedRowModel()
-      .rows.map((row) => row.original.id)
+      .rows.map((row) => row.id)
       .filter((id): id is string => id !== undefined);
     onDeleteRows(rowIds);
     table.toggleAllRowsSelected(false);
