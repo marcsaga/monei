@@ -44,7 +44,7 @@ const LineSVG = () => {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={3}
-        d="M6 12h12M6"
+        d="M6 12h12"
       />
     </svg>
   );

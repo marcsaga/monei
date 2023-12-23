@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable react-hooks/rules-of-hooks */
 import * as React from "react";
 import {
@@ -10,6 +11,7 @@ import {
 import "@tanstack/react-table";
 import { Checkbox } from "../checkbox";
 import { BinIcon } from "../icon";
+import { useClickOutside } from "~/hooks/use-click-outside";
 
 declare module "@tanstack/react-table" {
   interface Table<TData extends RowData> {
@@ -50,6 +52,19 @@ export function Table<T extends Partial<BaseRow>>({
 }: TableProps<T>) {
   const [tableData, setTableData] = React.useState<T[]>(data);
   const [isAddingRow, setIsAddingRow] = React.useState(false);
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const refRowAdded = React.useRef(false);
+
+  useClickOutside(rootRef, handleOnClickOutside);
+  async function handleOnClickOutside() {
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    if (refRowAdded.current) {
+      refRowAdded.current = false;
+      return;
+    }
+    setTableData(tableData.filter((row) => row.id !== "new"));
+    setIsAddingRow(false);
+  }
 
   React.useEffect(() => {
     setTableData(data);
@@ -66,8 +81,9 @@ export function Table<T extends Partial<BaseRow>>({
         value: unknown,
       ) => {
         if (rowIndex === tableData.length - 1 && isAddingRow) {
-          onAddRow(columnId, value);
+          if (value) onAddRow(columnId, value);
           setIsAddingRow(false);
+          refRowAdded.current = true;
         } else {
           onUpdateData(rowIndex, columnId, value);
         }
@@ -75,9 +91,9 @@ export function Table<T extends Partial<BaseRow>>({
     },
   });
 
-  function handleCreate() {
+  function handleAddRow() {
     setIsAddingRow(true);
-    setTableData([...tableData, { id: "partial" } as T]);
+    setTableData([...tableData, { id: "new" } as T]);
   }
 
   const isSomeRowSelected =
@@ -101,7 +117,7 @@ export function Table<T extends Partial<BaseRow>>({
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-6" ref={rootRef}>
       {isSomeRowSelected ? (
         <TableMenu
           selectedCount={table.getSelectedRowModel().rows.length}
@@ -180,7 +196,7 @@ export function Table<T extends Partial<BaseRow>>({
             >
               <button
                 className="h-full w-full text-left uppercase"
-                onClick={handleCreate}
+                onClick={handleAddRow}
               >
                 Add
               </button>

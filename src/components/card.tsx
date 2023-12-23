@@ -21,11 +21,11 @@ export const TotalCard = ({
 
   return (
     <div className="grid w-full grid-cols-2 items-center justify-between gap-1 rounded border border-gray-200 px-4 py-3 shadow">
-      <span className="text-xl font-semibold uppercase text-gray-500">
+      <span className="text-xl font-semibold uppercase text-gray-600">
         {description}
       </span>
       <span className="ml-auto self-center text-3xl font-semibold text-gray-900">
-        {total}€
+        {total.toFixed(2)}€
       </span>
       <span className="text-xs uppercase text-gray-400">{title}</span>
       <span

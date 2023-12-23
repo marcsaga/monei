@@ -8,15 +8,15 @@ import { type CategoryColor, type Category } from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
 import { useExpenseFilters } from "~/pages/expenses";
 
-function useListCategories(type: "expense" | "income") {
+function useListCategories(_type: "expense" | "income") {
   return api.category.listExpenseCategories.useQuery({}, { staleTime: 60_000 });
 }
 
-function useCurrentViewFilters(type: "expense" | "income") {
+function useCurrentViewFilters(_type: "expense" | "income") {
   return useExpenseFilters();
 }
 
-function useCurrentListContext(type: "expense" | "income") {
+function useCurrentListContext(_type: "expense" | "income") {
   const context = api.useContext();
   return context.expense.list;
 }
@@ -42,6 +42,8 @@ export function getCategoryInputCell<T extends object>(
   const listContext = useCurrentListContext(type);
   const context = api.useContext();
 
+  useClickOutside(dropdownRootRef, () => setShowSelector(false));
+
   const deleteCategory = api.category.deleteCategory.useMutation({
     onMutate: ({ id }) => {
       context.category.listExpenseCategories.setData(
@@ -62,8 +64,6 @@ export function getCategoryInputCell<T extends object>(
       void listContext.invalidate();
     },
   });
-
-  useClickOutside(dropdownRootRef, () => setShowSelector(false));
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     setNewCategory(e.target.value);
