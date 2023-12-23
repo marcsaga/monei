@@ -71,18 +71,6 @@ const Navbar = () => {
 };
 
 export const MainLayout = (props: { children: React.ReactNode }) => {
-  const { data } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!data) {
-      void router.push("/auth/signin");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
-  if (!data) return null;
-
   return (
     <main className="grid h-screen min-h-screen w-full md:grid-cols-[220px_1fr]">
       <Navbar />

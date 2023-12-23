@@ -10,3 +10,5 @@ export default function Incomes() {
     </MainLayout>
   );
 }
+
+Incomes.auth = true;

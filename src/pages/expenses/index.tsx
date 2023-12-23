@@ -107,3 +107,5 @@ function useMonthlyExpenseTotals() {
     previousTotal: previousMonthExpense.data?.reduce(calculate, 0),
   };
 }
+
+Expenses.auth = true;

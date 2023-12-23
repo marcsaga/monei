@@ -5,6 +5,7 @@ import type {
 import { getProviders, signIn } from "next-auth/react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "~/server/auth";
+import { DEFAULT_PATH } from "~/utils/constants";
 
 export default function SignIn({
   providers,
@@ -34,12 +35,9 @@ export default function SignIn({
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
   if (session) {
-    return { redirect: { destination: "/" } };
+    return { redirect: { destination: DEFAULT_PATH } };
   }
 
   const providers = await getProviders();
-
-  return {
-    props: { providers: providers ?? [] },
-  };
+  return { props: { providers: providers ?? [] } };
 }

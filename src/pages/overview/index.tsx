@@ -10,3 +10,5 @@ export default function Overview() {
     </MainLayout>
   );
 }
+
+Overview.auth = true;
