@@ -218,7 +218,7 @@ const TableMenu = ({ selectedCount, onDelete }: TableMenuProps) => {
     <div className="sticky top-0 z-10 -mt-12 mb-2 flex h-10 w-full items-center justify-between rounded bg-white px-8 shadow">
       <span className="text-gray-500">{selectedCount} selected</span>
       <button className="-m-2 p-2" onClick={onDelete}>
-        <BinIcon className="h-4 w-4" />
+        <BinIcon className="h-4 w-4 text-gray-500" />
       </button>
     </div>
   );

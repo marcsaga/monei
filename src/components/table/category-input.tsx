@@ -118,7 +118,7 @@ export function getCategoryInputCell<T extends object>(
   }, [inputRef, newCategory]);
 
   return (
-    <div className="relative">
+    <div className="relative w-40">
       <div className="cursor-pointer" onClick={() => setShowSelector(true)}>
         {activeCategory ? (
           <TagComponent {...activeCategory} />
