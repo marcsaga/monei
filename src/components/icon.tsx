@@ -202,3 +202,41 @@ export function BinIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function ArrowUpIcon(props: IconProps) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth="2.5"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 10l7-7m0 0l7 7m-7-7v18"
+      />
+    </svg>
+  );
+}
+
+export function ArrowDownIcon(props: IconProps) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth="2.5"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 14l7 7m0 0l7-7m-7 7V3"
+      />
+    </svg>
+  );
+}

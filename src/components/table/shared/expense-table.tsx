@@ -30,36 +30,14 @@ const columns: ColumnDef<Expense, any>[] = [
 
 export const ExpenseTable = () => {
   const { filters } = useExpenseFilters();
-  const context = api.useContext();
-
-  const expenseListQuery = api.expense.list.useQuery(
-    { start: filters.start, end: filters.end },
-    { staleTime: 60_000 },
-  );
-  const createExpenseMutation = api.expense.create.useMutation({
-    onSuccess: () => void context.expense.list.invalidate(),
-  });
-  const updateExpenseMutation = api.expense.update.useMutation();
-  const deleteExpenseMutation = api.expense.delete.useMutation({
-    onSuccess: (_, { ids }) =>
-      context.expense.list.setData(
-        filters,
-        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
-      ),
-    onMutate: ({ ids }) =>
-      context.expense.list.setData(
-        { start: filters.start, end: filters.end },
-        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
-      ),
-  });
-  const createCategoryMutation = api.category.createExpenseCategory.useMutation(
-    {
-      onSuccess: () => void context.category.listExpenseCategories.invalidate(),
-    },
-  );
+  const listExpenses = useListExpenses();
+  const createExpense = useCreateExpense();
+  const updateExpense = useUpdateExpense();
+  const deleteExpense = useDeleteExpenses();
+  const createCategory = useCreateExpenseCategory();
 
   function handleAddRow(columnId: keyof Omit<Expense, "id">, value: unknown) {
-    createExpenseMutation.mutate({ [columnId]: value, date: filters.start });
+    createExpense.mutate({ [columnId]: value, date: filters.start });
   }
 
   async function handleUpdateRow(
@@ -67,7 +45,7 @@ export const ExpenseTable = () => {
     columnId: keyof Omit<Expense, "id">,
     value: unknown,
   ) {
-    const expense = expenseListQuery.data?.[rowIndex];
+    const expense = listExpenses.data?.[rowIndex];
     if (!expense) return;
 
     let currentExpenseValue = expense[columnId];
@@ -76,7 +54,7 @@ export const ExpenseTable = () => {
       currentExpenseValue = expense.category?.id;
       const categoryUpdate = value as CategoryInputUpdateData;
       if (categoryUpdate.type === "create") {
-        const category = await createCategoryMutation.mutateAsync({
+        const category = await createCategory.mutateAsync({
           name: categoryUpdate.name,
           color: categoryUpdate.color,
         });
@@ -89,19 +67,19 @@ export const ExpenseTable = () => {
     if (currentExpenseValue === updateValue) {
       return;
     }
-    updateExpenseMutation.mutate({
+    updateExpense.mutate({
       id: expense.id,
       [columnId === "category" ? "categoryId" : columnId]: updateValue,
     });
   }
 
   function handleDeleteRows(rowIds: string[]) {
-    deleteExpenseMutation.mutate({ ids: rowIds });
+    deleteExpense.mutate({ ids: rowIds });
   }
 
   return (
     <Table
-      data={expenseListQuery.data ?? []}
+      data={listExpenses.data ?? []}
       columns={columns}
       onUpdateData={handleUpdateRow}
       onAddRow={handleAddRow}
@@ -109,3 +87,48 @@ export const ExpenseTable = () => {
     />
   );
 };
+
+function useUpdateExpense() {
+  const context = api.useContext();
+  const { start, end } = useExpenseFilters().filters;
+  return api.expense.update.useMutation({
+    onSuccess: () => void context.expense.list.invalidate({ start, end }),
+  });
+}
+
+function useCreateExpense() {
+  const context = api.useContext();
+  const { start, end } = useExpenseFilters().filters;
+  return api.expense.create.useMutation({
+    onSuccess: () => void context.expense.list.invalidate({ start, end }),
+  });
+}
+
+function useListExpenses() {
+  const { start, end } = useExpenseFilters().filters;
+  return api.expense.list.useQuery({ start, end }, { staleTime: 60_000 });
+}
+
+function useDeleteExpenses() {
+  const context = api.useContext();
+  const { start, end } = useExpenseFilters().filters;
+  return api.expense.delete.useMutation({
+    onSuccess: (_, { ids }) =>
+      context.expense.list.setData(
+        { start, end },
+        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
+      ),
+    onMutate: ({ ids }) =>
+      context.expense.list.setData(
+        { start, end },
+        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
+      ),
+  });
+}
+
+function useCreateExpenseCategory() {
+  const context = api.useContext();
+  return api.category.createExpenseCategory.useMutation({
+    onSuccess: () => void context.category.listExpenseCategories.invalidate(),
+  });
+}

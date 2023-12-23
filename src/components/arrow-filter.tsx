@@ -21,7 +21,9 @@ export const ArrowFilter = ({
       >
         <ArrowRight />
       </button>
-      <span className="text-lg">{currentFilter}</span>
+      <span className="ml-4 text-xl font-semibold uppercase text-gray-600">
+        {currentFilter}
+      </span>
     </div>
   );
 };

@@ -110,7 +110,7 @@ export function Table<T extends Partial<BaseRow>>({
       ) : null}
       <table className="w-full rounded-lg bg-white shadow">
         <colgroup>
-          <col className="w-10" />
+          <col className="min-w-[40px]" />
           <col className="w-2/5" />
         </colgroup>
         <thead>
