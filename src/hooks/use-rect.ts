@@ -47,6 +47,7 @@ export const useRect = (ref: MutableRefObject<HTMLDivElement | null>) => {
         window.removeEventListener("resize", handleResize);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref.current]);
 
   return rect;

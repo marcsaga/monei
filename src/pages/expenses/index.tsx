@@ -10,13 +10,21 @@ import {
   getFullPreviousMonthDates,
   getMonthName,
 } from "~/utils/date-formatters";
-import { TotalCard } from "~/components/card";
+import { TotalCard } from "~/components/cards/totals";
 import { api } from "~/utils/api";
 import { type Expense } from "~/utils/interfaces";
+import { PieChartCard } from "~/components/cards/pie-chart";
 
 export default function Expenses() {
-  const { filters, handleOnMonthChange } = useExpenseFilters();
+  const {
+    filters: { start, end },
+    handleOnMonthChange,
+  } = useExpenseFilters();
   const { currentTotal, previousTotal } = useMonthlyExpenseTotals();
+  const expensesList = api.expense.list.useQuery(
+    { start, end },
+    { staleTime: 60_000 },
+  );
   usePreLoadExpenses();
 
   return (
@@ -24,18 +32,19 @@ export default function Expenses() {
       <PageLayout title="Expenses" icon={<IconShoppingcart />}>
         <div className="grid gap-10 py-16">
           <ArrowFilter
-            currentFilter={getMonthName(new Date(filters.start))}
+            currentFilter={getMonthName(new Date(start))}
             onArrowClick={handleOnMonthChange}
           />
           <div className="grid grid-cols-[2fr_1fr] gap-4">
             <ExpenseTable />
             <div className="mt-6 flex flex-col gap-4">
               <TotalCard
-                title={getMonthName(new Date(filters.start))}
+                title={getMonthName(new Date(start))}
                 description="Total expenses"
                 total={currentTotal ?? 0}
                 previousTotal={previousTotal ?? 0}
               />
+              <PieChartCard data={expensesList.data ?? []} />
             </div>
           </div>
         </div>
@@ -64,6 +73,7 @@ export const useExpenseFilters = () => {
       return;
     }
     void router.replace({ query: initialFilters });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { start, end } = getFullMonthDates(

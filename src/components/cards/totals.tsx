@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon } from "./icon";
+import { ArrowDownIcon, ArrowUpIcon } from "../icon";
 
 interface TotalCardProps {
   total: number;
@@ -20,7 +20,7 @@ export const TotalCard = ({
   const hasPostiveDifference = historicPercentage > 0;
 
   return (
-    <div className="grid w-full grid-cols-2 items-center justify-between gap-1 rounded border border-gray-200 px-4 py-3 shadow">
+    <div className="card grid w-full grid-cols-2 items-center justify-between gap-1">
       <span className="text-xl font-semibold uppercase text-gray-600">
         {description}
       </span>

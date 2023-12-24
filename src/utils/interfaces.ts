@@ -21,7 +21,7 @@ export type CategoryColor =
   | "pink"
   | "indigo"
   | "teal"
-  | "gray";
+  | "orange";
 
 export const colors = [
   "red",
@@ -32,5 +32,5 @@ export const colors = [
   "pink",
   "indigo",
   "teal",
-  "gray",
+  "orange",
 ] as const;
