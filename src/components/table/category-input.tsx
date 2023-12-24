@@ -3,22 +3,20 @@ import React, { useState, type JSX, useEffect } from "react";
 import { type CellContext } from "@tanstack/react-table";
 import { TagComponent, generateTagColor } from "../tag";
 import { useClickOutside } from "~/hooks/use-click-outside";
-import { api } from "~/utils/api";
 import { type CategoryColor, type Category } from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
 import { useExpenseFilters } from "~/pages/expenses";
+import {
+  useDeleteExpenseCategory,
+  useListExpenseCategories,
+} from "~/hooks/api/categories";
 
 function useListCategories(_type: "expense" | "income") {
-  return api.category.listExpenseCategories.useQuery({}, { staleTime: 60_000 });
+  return useListExpenseCategories();
 }
 
 function useCurrentViewFilters(_type: "expense" | "income") {
   return useExpenseFilters();
-}
-
-function useCurrentListContext(_type: "expense" | "income") {
-  const context = api.useContext();
-  return context.expense.list;
 }
 
 export type CategoryInputUpdateData =
@@ -37,33 +35,11 @@ export function getCategoryInputCell<T extends object>(
   const dropdownRootRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { data } = useListCategories(type);
   const { filters } = useCurrentViewFilters(type);
-  const listContext = useCurrentListContext(type);
-  const context = api.useContext();
+  const { data } = useListCategories(type);
+  const deleteCategory = useDeleteExpenseCategory(type, filters);
 
   useClickOutside(dropdownRootRef, () => setShowSelector(false));
-
-  const deleteCategory = api.category.deleteCategory.useMutation({
-    onMutate: ({ id }) => {
-      context.category.listExpenseCategories.setData(
-        {},
-        (prev) => prev?.filter((category) => category.id !== id),
-      );
-      listContext.setData(
-        filters,
-        (prev) =>
-          prev?.map((obj) => ({
-            ...obj,
-            category: obj.category?.id === id ? undefined : obj.category,
-          })),
-      );
-    },
-    onSuccess: () => {
-      void context.category.listExpenseCategories.invalidate();
-      void listContext.invalidate();
-    },
-  });
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     setNewCategory(e.target.value);

@@ -9,6 +9,13 @@ import {
   getCategoryInputCell,
 } from "../category-input";
 import { type Expense } from "~/utils/interfaces";
+import {
+  useCreateExpense,
+  useDeleteExpenses,
+  useListExpenses,
+  useUpdateExpense,
+} from "~/hooks/api/expenses";
+import { useCreateExpenseCategory } from "~/hooks/api/categories";
 
 const columnHelper = createColumnHelper<Expense>();
 
@@ -30,10 +37,10 @@ const columns: ColumnDef<Expense, any>[] = [
 
 export const ExpenseTable = () => {
   const { filters } = useExpenseFilters();
-  const listExpenses = useListExpenses();
-  const createExpense = useCreateExpense();
-  const updateExpense = useUpdateExpense();
-  const deleteExpense = useDeleteExpenses();
+  const listExpenses = useListExpenses(filters);
+  const createExpense = useCreateExpense(filters);
+  const updateExpense = useUpdateExpense(filters);
+  const deleteExpense = useDeleteExpenses(filters);
   const createCategory = useCreateExpenseCategory();
 
   function handleAddRow(columnId: keyof Omit<Expense, "id">, value: unknown) {
@@ -87,48 +94,3 @@ export const ExpenseTable = () => {
     />
   );
 };
-
-function useUpdateExpense() {
-  const context = api.useContext();
-  const { start, end } = useExpenseFilters().filters;
-  return api.expense.update.useMutation({
-    onSuccess: () => void context.expense.list.invalidate({ start, end }),
-  });
-}
-
-function useCreateExpense() {
-  const context = api.useContext();
-  const { start, end } = useExpenseFilters().filters;
-  return api.expense.create.useMutation({
-    onSuccess: () => void context.expense.list.invalidate({ start, end }),
-  });
-}
-
-function useListExpenses() {
-  const { start, end } = useExpenseFilters().filters;
-  return api.expense.list.useQuery({ start, end }, { staleTime: 60_000 });
-}
-
-function useDeleteExpenses() {
-  const context = api.useContext();
-  const { start, end } = useExpenseFilters().filters;
-  return api.expense.delete.useMutation({
-    onSuccess: (_, { ids }) =>
-      context.expense.list.setData(
-        { start, end },
-        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
-      ),
-    onMutate: ({ ids }) =>
-      context.expense.list.setData(
-        { start, end },
-        (prev) => prev?.filter((expense) => !ids.includes(expense.id)),
-      ),
-  });
-}
-
-function useCreateExpenseCategory() {
-  const context = api.useContext();
-  return api.category.createExpenseCategory.useMutation({
-    onSuccess: () => void context.category.listExpenseCategories.invalidate(),
-  });
-}

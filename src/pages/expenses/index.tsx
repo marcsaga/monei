@@ -5,26 +5,22 @@ import { ArrowFilter } from "~/components/arrow-filter";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import {
+  dayFromDate,
   getFullMonthDates,
   getFullNextMonthDates,
   getFullPreviousMonthDates,
   getMonthName,
 } from "~/utils/date-formatters";
 import { TotalCard } from "~/components/cards/totals";
-import { api } from "~/utils/api";
 import { type Expense } from "~/utils/interfaces";
 import { PieChartCard } from "~/components/cards/pie-chart";
+import { useListExpenses } from "~/hooks/api/expenses";
 
 export default function Expenses() {
-  const {
-    filters: { start, end },
-    handleOnMonthChange,
-  } = useExpenseFilters();
+  const { filters, handleOnMonthChange } = useExpenseFilters();
   const { currentTotal, previousTotal } = useMonthlyExpenseTotals();
-  const expensesList = api.expense.list.useQuery(
-    { start, end },
-    { staleTime: 60_000 },
-  );
+  const expensesList = useListExpenses(filters);
+
   usePreLoadExpenses();
 
   return (
@@ -32,14 +28,14 @@ export default function Expenses() {
       <PageLayout title="Expenses" icon={<IconShoppingcart />}>
         <div className="grid gap-10 py-16">
           <ArrowFilter
-            currentFilter={getMonthName(new Date(start))}
+            currentFilter={getMonthName(filters.start)}
             onArrowClick={handleOnMonthChange}
           />
           <div className="grid grid-cols-[2fr_1fr] gap-4">
             <ExpenseTable />
             <div className="mt-6 flex flex-col gap-4">
               <TotalCard
-                title={getMonthName(new Date(start))}
+                title={getMonthName(filters.start)}
                 description="Total expenses"
                 total={currentTotal ?? 0}
                 previousTotal={previousTotal ?? 0}
@@ -53,7 +49,9 @@ export default function Expenses() {
   );
 }
 
-const initialFilters = { date: getFullMonthDates(new Date()).start };
+const initialFilters = {
+  date: getFullMonthDates(dayFromDate(new Date())).start,
+};
 
 export const useExpenseFilters = () => {
   const router = useRouter();
@@ -61,7 +59,7 @@ export const useExpenseFilters = () => {
   function handleOnMonthChange(direction: 1 | -1) {
     const date = new Date(router.query.date as string);
     date.setMonth(date.getMonth() + direction);
-    const newMonthDates = getFullMonthDates(date);
+    const newMonthDates = getFullMonthDates(dayFromDate(date));
 
     void router.replace({
       query: { ...router.query, date: newMonthDates.start },
@@ -77,38 +75,28 @@ export const useExpenseFilters = () => {
   }, []);
 
   const { start, end } = getFullMonthDates(
-    router.query.date ? new Date(router.query.date as string) : new Date(),
+    router.query.date ? (router.query.date as string) : initialFilters.date,
   );
 
   return { filters: { start, end }, handleOnMonthChange };
 };
 
-function usePreLoadExpenses() {
-  const { filters } = useExpenseFilters();
-  const previous = getFullPreviousMonthDates(new Date(filters.start));
-  const next = getFullNextMonthDates(new Date(filters.start));
+export function usePreLoadExpenses() {
+  const { filters: current } = useExpenseFilters();
+  const previous = getFullPreviousMonthDates(current.start);
+  const next = getFullNextMonthDates(current.start);
 
-  api.expense.list.useQuery(
-    { start: previous.start, end: previous.end },
-    { staleTime: 60_000 },
-  );
-  api.expense.list.useQuery(
-    { start: next.start, end: next.end },
-    { staleTime: 60_000 },
-  );
+  useListExpenses(previous);
+  useListExpenses(next);
+  useListExpenses(current);
 }
 
 function useMonthlyExpenseTotals() {
-  const { start, end } = useExpenseFilters().filters;
-  const currentMonthExpense = api.expense.list.useQuery(
-    { start, end },
-    { staleTime: 60_000 },
-  );
-  const previous = getFullPreviousMonthDates(new Date(start));
-  const previousMonthExpense = api.expense.list.useQuery(
-    { start: previous.start, end: previous.end },
-    { staleTime: 60_000 },
-  );
+  const current = useExpenseFilters().filters;
+  const previous = getFullPreviousMonthDates(current.start);
+
+  const currentMonthExpense = useListExpenses(current);
+  const previousMonthExpense = useListExpenses(previous);
 
   const calculate = (acc: number, expense: Expense) =>
     acc + (expense.amount ?? 0);

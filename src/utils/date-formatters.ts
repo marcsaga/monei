@@ -2,8 +2,8 @@ const locale = "en-US";
 
 const formatter = Intl.DateTimeFormat(locale, { month: "long" });
 
-export function getMonthName(date: Date): string {
-  return formatter.format(date);
+export function getMonthName(date: string): string {
+  return formatter.format(new Date(date));
 }
 
 export function dayFromDate(date: Date) {
@@ -17,7 +17,8 @@ function formatDateNumberPadding(num?: string) {
   return num?.toString().padStart(2, "0") ?? "00";
 }
 
-export function getFullMonthDates(date: Date) {
+export function getFullMonthDates(dateInput: string) {
+  const date = new Date(dateInput);
   const year = date.getFullYear();
   const month = date.getMonth();
   const startDate = new Date(year, month, 1);
@@ -26,7 +27,8 @@ export function getFullMonthDates(date: Date) {
   return { start: dayFromDate(startDate), end: dayFromDate(endDate) };
 }
 
-export function getFullPreviousMonthDates(date: Date) {
+export function getFullPreviousMonthDates(dateInput: string) {
+  const date = new Date(dateInput);
   const year = date.getFullYear();
   const month = date.getMonth();
   const startDate = new Date(year, month - 1, 1);
@@ -35,7 +37,8 @@ export function getFullPreviousMonthDates(date: Date) {
   return { start: dayFromDate(startDate), end: dayFromDate(endDate) };
 }
 
-export function getFullNextMonthDates(date: Date) {
+export function getFullNextMonthDates(dateInput: string) {
+  const date = new Date(dateInput);
   const year = date.getFullYear();
   const month = date.getMonth();
   const startDate = new Date(year, month + 1, 1);
