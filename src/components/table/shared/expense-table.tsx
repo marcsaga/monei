@@ -3,7 +3,6 @@ import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { getInputEditableCell } from "~/components/table";
 import { Table } from "~/components/table/table";
 import { useExpenseFilters } from "~/pages/expenses";
-import { api } from "~/utils/api";
 import {
   type CategoryInputUpdateData,
   getCategoryInputCell,
@@ -16,6 +15,7 @@ import {
   useUpdateExpense,
 } from "~/hooks/api/expenses";
 import { useCreateExpenseCategory } from "~/hooks/api/categories";
+import { useCallback } from "react";
 
 const columnHelper = createColumnHelper<Expense>();
 
@@ -41,10 +41,22 @@ export const ExpenseTable = () => {
   const createExpense = useCreateExpense(filters);
   const updateExpense = useUpdateExpense(filters);
   const deleteExpense = useDeleteExpenses(filters);
-  const createCategory = useCreateExpenseCategory();
+  const { processExpenseCategory } = useProcessExpenseCategory();
 
-  function handleAddRow(columnId: keyof Omit<Expense, "id">, value: unknown) {
-    createExpense.mutate({ [columnId]: value, date: filters.start });
+  async function handleAddRow(
+    columnId: keyof Omit<Expense, "id">,
+    value: unknown,
+  ) {
+    let createValue = value;
+    if (columnId === "category") {
+      createValue = await processExpenseCategory(
+        value as CategoryInputUpdateData,
+      );
+    }
+    createExpense.mutate({
+      [columnId === "category" ? "categoryId" : columnId]: createValue,
+      date: filters.start,
+    });
   }
 
   async function handleUpdateRow(
@@ -55,23 +67,14 @@ export const ExpenseTable = () => {
     const expense = listExpenses.data?.[rowIndex];
     if (!expense) return;
 
-    let currentExpenseValue = expense[columnId];
     let updateValue = value;
     if (columnId === "category") {
-      currentExpenseValue = expense.category?.id;
-      const categoryUpdate = value as CategoryInputUpdateData;
-      if (categoryUpdate.type === "create") {
-        const category = await createCategory.mutateAsync({
-          name: categoryUpdate.name,
-          color: categoryUpdate.color,
-        });
-        updateValue = category.id;
-      } else {
-        updateValue = categoryUpdate.id;
-      }
+      updateValue = await processExpenseCategory(
+        value as CategoryInputUpdateData,
+      );
     }
 
-    if (currentExpenseValue === updateValue) {
+    if (expense[columnId] === updateValue) {
       return;
     }
     updateExpense.mutate({
@@ -94,3 +97,26 @@ export const ExpenseTable = () => {
     />
   );
 };
+
+function useProcessExpenseCategory() {
+  const createCategory = useCreateExpenseCategory();
+  const processExpenseCategory = useCallback(
+    async (input: CategoryInputUpdateData) => {
+      let response: string | null;
+      if (input.type === "create") {
+        const category = await createCategory.mutateAsync({
+          name: input.name,
+          color: input.color,
+        });
+        response = category.id;
+      } else {
+        response = input.id;
+      }
+
+      return response;
+    },
+    [createCategory],
+  );
+
+  return { processExpenseCategory };
+}

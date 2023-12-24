@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, type JSX, useEffect } from "react";
 import { type CellContext } from "@tanstack/react-table";
-import { TagComponent, generateTagColor } from "../tag";
+import { TagComponent, useGenerateTagColor } from "../tag";
 import { useClickOutside } from "~/hooks/use-click-outside";
-import { type CategoryColor, type Category } from "~/utils/interfaces";
+import { type CategoryColor, type Category, colors } from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
 import { useExpenseFilters } from "~/pages/expenses";
 import {
@@ -38,6 +38,9 @@ export function getCategoryInputCell<T extends object>(
   const { filters } = useCurrentViewFilters(type);
   const { data } = useListCategories(type);
   const deleteCategory = useDeleteExpenseCategory(type, filters);
+  const generateTagColor = useGenerateTagColor(type);
+
+  const canCreateNewCategory = !!data && data.length < colors.length;
 
   useClickOutside(dropdownRootRef, () => setShowSelector(false));
 
@@ -111,18 +114,22 @@ export function getCategoryInputCell<T extends object>(
             {activeCategory ? (
               <TagComponent {...activeCategory} onClose={onCloseCategory} />
             ) : (
-              <input
-                ref={inputRef}
-                className="h-full w-full bg-gray-200 outline-none"
-                onChange={handleOnChange}
-                value={newCategory}
-              />
+              canCreateNewCategory && (
+                <input
+                  ref={inputRef}
+                  className="h-full w-full bg-gray-200 outline-none"
+                  onChange={handleOnChange}
+                  value={newCategory}
+                />
+              )
             )}
           </div>
           <span className="px-4 py-2 text-xs text-gray-500">
-            Select an option or create one
+            {canCreateNewCategory
+              ? "Select an option or create one"
+              : "Select an option"}
           </span>
-          <ul className="pb-2">
+          <ul className="max-h-[154px] overflow-auto pb-2">
             {data?.map((tag) => (
               <li
                 key={tag.id}

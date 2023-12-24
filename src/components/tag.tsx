@@ -1,5 +1,7 @@
 import { colors, type CategoryColor } from "~/utils/interfaces";
 import { CrossIcon } from "./icon";
+import { useListExpenseCategories } from "~/hooks/api/categories";
+import { useCallback } from "react";
 
 interface TagComponentProps {
   name: string;
@@ -65,9 +67,17 @@ export const TagComponent = ({ name, color, onClose }: TagComponentProps) => {
   );
 };
 
-export function generateTagColor() {
-  return (
-    colors[Math.floor(Math.random() * colors.length)] ??
-    ("red" as CategoryColor)
-  );
+export function useGenerateTagColor(_type: "expense" | "income") {
+  const { data } = useListExpenseCategories();
+  const generate = useCallback(() => {
+    const usedColors = new Set(data?.map((category) => category.color) ?? []);
+    const availableColors = colors.filter((color) => !usedColors.has(color));
+
+    return (
+      availableColors[Math.floor(Math.random() * availableColors.length)] ??
+      "red"
+    );
+  }, [data]);
+
+  return generate;
 }

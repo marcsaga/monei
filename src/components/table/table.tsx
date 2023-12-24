@@ -62,7 +62,7 @@ export function Table<T extends Partial<BaseRow>>({
       isAddingRowState.current = undefined;
       return;
     } else if (isAddingRowState.current === "adding") {
-      setTableData((prev) => prev.filter((row) => row.id !== "new"));
+      setTableData((prev) => prev.filter((row) => !row.id?.includes("new")));
       setIsAddingRow(false);
     }
   }
@@ -96,7 +96,7 @@ export function Table<T extends Partial<BaseRow>>({
   function handleAddRow() {
     setIsAddingRow(true);
     isAddingRowState.current = "adding";
-    setTableData([...tableData, { id: "new" } as T]);
+    setTableData([...tableData, { id: "new" + Math.random().toString() } as T]);
   }
 
   const isSomeRowSelected =
