@@ -1,5 +1,6 @@
 import { Pie } from "@nivo/pie";
 import _ from "lodash";
+import { animated } from "@react-spring/web";
 import { type Category } from "~/utils/interfaces";
 import { TagComponent, hexColorDict } from "./tag";
 
@@ -52,6 +53,37 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
       activeOuterRadiusOffset={4}
       activeInnerRadiusOffset={4}
       arcLinkLabelsThickness={1.5}
+      arcLinkLabelComponent={(d) => {
+        return (
+          <animated.g opacity={d.style.opacity}>
+            <animated.path
+              fill="none"
+              stroke={d.style.linkColor}
+              strokeWidth={d.style.thickness}
+              d={d.style.path}
+            />
+            <animated.text
+              y={-1}
+              transform={d.style.textPosition}
+              textAnchor={d.style.textAnchor}
+              dominantBaseline="central"
+              className="text-xs tracking-tight "
+            >
+              {d.label}
+            </animated.text>
+          </animated.g>
+        );
+      }}
+      arcLabelsComponent={({ label, style }) => (
+        <animated.text
+          transform={style.transform}
+          textAnchor="middle"
+          dominantBaseline="central"
+          className="pointer-events-none text-xs font-medium"
+        >
+          {label}
+        </animated.text>
+      )}
       tooltip={({ datum }) => {
         return (
           <div className="card flex items-center gap-1 p-2">
