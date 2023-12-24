@@ -27,7 +27,7 @@ const columns: ColumnDef<Expense, any>[] = [
   }),
   columnHelper.accessor("amount", {
     cell: (input) => getInputEditableCell<Expense>(input, "number"),
-    header: () => <span>Amount</span>,
+    header: () => <span>Amount €</span>,
   }),
   columnHelper.accessor("category", {
     cell: (input) => getCategoryInputCell<Expense>(input, "expense"),
