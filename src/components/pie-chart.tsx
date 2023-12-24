@@ -25,7 +25,7 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
       return {
         id: key ?? "No category",
         label: subgroup[0]?.category?.name ?? "No category",
-        value: amount,
+        value: Math.round(amount * 100) / 100,
         color: subgroup[0]?.category?.color,
         percentage: Math.round((amount / total) * 100),
       };
