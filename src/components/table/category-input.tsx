@@ -60,7 +60,8 @@ export function getCategoryInputCell<T extends object>(
     setShowSelector(false);
   }
 
-  function onDeleteCategory(id: string) {
+  function handleOnDeleteCategory(event: React.BaseSyntheticEvent, id: string) {
+    event.stopPropagation();
     deleteCategory.mutate({ id });
   }
 
@@ -70,7 +71,7 @@ export function getCategoryInputCell<T extends object>(
 
   useEffect(() => {
     function onEnter(e: KeyboardEvent) {
-      if (e.key === "Enter") {
+      if (inputRef.current?.contains(e.target as Node) && e.key === "Enter") {
         e.preventDefault();
         const newCategoryValue = newCategory.trim();
         if (newCategoryValue) {
@@ -98,7 +99,14 @@ export function getCategoryInputCell<T extends object>(
 
   return (
     <div className="relative w-40">
-      <div className="cursor-pointer" onClick={() => setShowSelector(true)}>
+      <div
+        className="cursor-pointer"
+        onClick={() => setShowSelector(true)}
+        tabIndex={0}
+        onKeyDown={(e) =>
+          e.key === "Enter" ? setShowSelector(true) : undefined
+        }
+      >
         {activeCategory ? (
           <TagComponent {...activeCategory} />
         ) : (
@@ -132,16 +140,22 @@ export function getCategoryInputCell<T extends object>(
           <ul className="max-h-[154px] overflow-auto pb-2">
             {data?.map((tag) => (
               <li
+                tabIndex={0}
                 key={tag.id}
                 className="flex cursor-pointer items-center justify-between px-4 py-1 hover:bg-gray-100"
                 onClick={() => onSelectCategory(tag.id)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" ? onSelectCategory(tag.id) : undefined
+                }
               >
                 <TagComponent {...tag} />
                 <button
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onDeleteCategory(tag.id);
-                  }}
+                  onClick={(evt) => handleOnDeleteCategory(evt, tag.id)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter"
+                      ? handleOnDeleteCategory(e, tag.id)
+                      : undefined
+                  }
                 >
                   <CrossIcon className="h-3 w-3" />
                 </button>

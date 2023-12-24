@@ -137,7 +137,7 @@ export function Table<T extends Partial<BaseRow>>({
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="h-10 bg-gray-100">
-              <th className="group">
+              <th className="group" tabIndex={0}>
                 <Checkbox
                   checked={isSomeRowSelected}
                   className={`${
