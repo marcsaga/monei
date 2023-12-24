@@ -89,6 +89,7 @@ export const ExpenseTable = () => {
 
   return (
     <Table
+      id={`expenses-${filters.start}`}
       data={listExpenses.data ?? []}
       columns={columns}
       onUpdateData={handleUpdateRow}

@@ -28,6 +28,7 @@ declare module "@tanstack/react-table" {
 }
 
 interface TableProps<T> {
+  id: string;
   data: T[];
   columns: ColumnDef<T>[];
   onUpdateData: (
@@ -44,6 +45,7 @@ interface BaseRow {
 }
 
 export function Table<T extends Partial<BaseRow>>({
+  id,
   data,
   columns,
   onUpdateData,
@@ -75,7 +77,7 @@ export function Table<T extends Partial<BaseRow>>({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getRowId: (originalRow, index) => originalRow.id ?? index.toString(),
+    getRowId: (_originalRow, index) => id + "_" + index.toString(),
     meta: {
       updateData: (
         rowIndex: number,
@@ -113,7 +115,7 @@ export function Table<T extends Partial<BaseRow>>({
   function handleDeleteRows() {
     const rowIds = table
       .getSelectedRowModel()
-      .rows.map((row) => row.id)
+      .rows.map((row) => row.original.id)
       .filter((id): id is string => id !== undefined);
     onDeleteRows(rowIds);
     table.toggleAllRowsSelected(false);
@@ -148,7 +150,7 @@ export function Table<T extends Partial<BaseRow>>({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-6 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
+                  className="px-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
                 >
                   {flexRender(
                     header.column.columnDef.header,
