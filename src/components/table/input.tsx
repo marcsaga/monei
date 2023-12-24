@@ -18,8 +18,14 @@ export function getInputEditableCell<T extends object>(
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (type === "number") {
       const newValue = e.target.value
-        .replace(/\,/g, ".")
-        .replace(/[^0-9.]|(?<=.\d\d)\d+$/g, "");
+        .replace(/,/g, ".")
+        // Remove non-digit and non-dot characters
+        .replace(/[^\d.]/g, "")
+        // Remove extra dots and keep only the first one
+        .replace(/(\..*)\./g, "$1")
+        // Limit to one dot after digits
+        .replace(/(\d+\.\d{2}).*/g, "$1");
+
       setValue(newValue);
       return;
     }
