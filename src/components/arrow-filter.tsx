@@ -9,6 +9,9 @@ export const ArrowFilter = ({
 }: ArrowFilterProps) => {
   return (
     <div className="flex w-min items-center justify-between gap-2">
+      <span className="mr-4 font-semibold uppercase text-gray-600">
+        {currentFilter}
+      </span>
       <button
         className="rounded border border-slate-300 p-3"
         onClick={() => onArrowClick(-1)}
@@ -21,9 +24,6 @@ export const ArrowFilter = ({
       >
         <ArrowRight />
       </button>
-      <span className="ml-4 text-xl font-semibold uppercase text-gray-600">
-        {currentFilter}
-      </span>
     </div>
   );
 };

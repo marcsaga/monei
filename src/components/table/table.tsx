@@ -122,21 +122,24 @@ export function Table<T extends Partial<BaseRow>>({
   }
 
   return (
-    <div className="mt-6" ref={rootRef}>
+    <div ref={rootRef}>
       {isSomeRowSelected ? (
         <TableMenu
           selectedCount={table.getSelectedRowModel().rows.length}
           onDelete={handleDeleteRows}
         />
       ) : null}
-      <table className="w-full rounded-lg bg-white shadow">
+      <table className="w-full rounded bg-white shadow">
         <colgroup>
           <col className="min-w-[40px]" />
           <col className="w-2/5" />
         </colgroup>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="h-10 bg-gray-100">
+            <tr
+              key={headerGroup.id}
+              className="h-10 bg-gray-100 [&>:first-child]:rounded-tl [&>:last-child]:rounded-tr"
+            >
               <th className="group" tabIndex={0}>
                 <Checkbox
                   checked={isSomeRowSelected}
@@ -197,10 +200,10 @@ export function Table<T extends Partial<BaseRow>>({
           <tr className="border-t-2 border-gray-100 hover:bg-gray-100">
             <td
               colSpan={columns.length + 1}
-              className="h-10 px-6 text-xs font-bold text-gray-400"
+              className="h-10 text-xs font-bold text-gray-400"
             >
               <button
-                className="h-full w-full text-left uppercase"
+                className="h-full w-full px-6 text-left uppercase"
                 onClick={handleAddRow}
               >
                 Add

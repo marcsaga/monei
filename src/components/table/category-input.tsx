@@ -5,11 +5,11 @@ import { TagComponent, useGenerateTagColor } from "../tag";
 import { useClickOutside } from "~/hooks/use-click-outside";
 import { type CategoryColor, type Category, colors } from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
-import { useExpenseFilters } from "~/pages/expenses";
 import {
   useDeleteExpenseCategory,
   useListExpenseCategories,
 } from "~/hooks/api/categories";
+import { useExpenseFilters } from "~/pages/monthly-view/expenses";
 
 function useListCategories(_type: "expense" | "income") {
   return useListExpenseCategories();

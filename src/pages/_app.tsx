@@ -6,6 +6,7 @@ import Head from "next/head";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "~/styles/globals.css";
 import React from "react";
+import { MainLayout } from "~/components/layout";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -20,7 +21,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       {"auth" in Component && Component.auth ? (
         <Auth>
-          <Component {...pageProps} />
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
         </Auth>
       ) : (
         <Component {...pageProps} />

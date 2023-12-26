@@ -5,6 +5,7 @@ interface TotalCardProps {
   title: string;
   description: string;
   previousTotal: number;
+  className?: string;
 }
 
 export const TotalCard = ({
@@ -12,6 +13,7 @@ export const TotalCard = ({
   description,
   total,
   previousTotal,
+  className = "",
 }: TotalCardProps) => {
   const historicPercentage =
     previousTotal > 0
@@ -20,14 +22,16 @@ export const TotalCard = ({
   const hasPostiveDifference = historicPercentage > 0;
 
   return (
-    <div className="card grid w-full grid-cols-2 items-center justify-between gap-1">
+    <div
+      className={`card grid w-full grid-cols-2 items-center justify-between gap-1 ${className}`}
+    >
       <span className="text-xl font-semibold uppercase text-gray-600">
         {description}
       </span>
       <span className="ml-auto self-center text-3xl font-semibold text-gray-900">
         {total.toFixed(2)}€
       </span>
-      <span className="text-xs uppercase text-gray-400">{title}</span>
+      <span className="uppercase text-gray-400">{title}</span>
       <span
         className={`ml-auto flex items-center gap-1 text-sm font-bold ${
           hasPostiveDifference ? "text-red-500" : "text-green-500"

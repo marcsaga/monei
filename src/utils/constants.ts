@@ -1,1 +1,1 @@
-export const DEFAULT_PATH = "/overview";
+export const DEFAULT_PATH = "/summary";

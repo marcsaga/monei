@@ -1,7 +1,10 @@
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { IconHome, IconShoppingcart, IconDollarsign } from "./icon";
+import { IconHome, IconShoppingcart } from "./icon";
+import { ArrowFilter } from "./arrow-filter";
+import { getMonthName } from "~/utils/date-formatters";
+import { useExpenseFilters } from "~/pages/monthly-view/expenses";
 
 interface NavbarOptionProps {
   href: string;
@@ -10,60 +13,47 @@ interface NavbarOptionProps {
 
 const NavbarLink = (props: NavbarOptionProps) => {
   const { pathname } = useRouter();
-  const isActive = pathname.includes(props.href);
+  const isActive = props.href
+    .split("/")
+    .find((subpath) => subpath && pathname.includes(subpath));
 
   return (
-    <li>
-      <Link
-        className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-zinc-900 transition-all hover:bg-[hsl(53,100%,70%)]/20 ${
-          isActive ? "bg-[hsl(53,100%,70%)]/20" : ""
-        }`}
-        href={props.href}
-      >
-        {props.children}
-      </Link>
-    </li>
+    <Link
+      className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-1 text-zinc-900 transition-all hover:bg-[hsl(53,100%,70%)]/30 ${
+        isActive ? "bg-[hsl(53,100%,70%)]/30" : ""
+      }`}
+      href={props.href}
+    >
+      {props.children}
+    </Link>
   );
 };
 
 const Navbar = () => {
-  const { data } = useSession();
-  if (!data) return null;
-
   return (
-    <div className="hidden border-r bg-slate-100 lg:block">
-      <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-[60px] items-center border-b px-6">
-          <Link className="flex items-center gap-2 font-semibold" href="#">
-            <span className="text-3xl font-bold text-[hsl(53,100%,70%)]">
-              Monei
-            </span>
-          </Link>
-        </div>
-        <nav className="flex-1 overflow-auto py-2">
-          <ul className="grid items-start gap-2 px-4 text-sm font-medium">
-            <NavbarLink href="/overview">
-              <IconHome className="h-4 w-4" />
-              Overview
-            </NavbarLink>
-            <NavbarLink href="/expenses">
-              <IconShoppingcart className="h-4 w-4" />
-              Expenses
-            </NavbarLink>
-            <NavbarLink href="/incomes">
-              <IconDollarsign className="h-4 w-4" />
-              Incomes
-            </NavbarLink>
-          </ul>
-        </nav>
-        <div>
-          <button
-            className="flex w-full items-center gap-2 p-4 text-sm font-medium text-slate-400 hover:bg-slate-200 hover:text-slate-500"
-            onClick={() => void signOut()}
-          >
-            Sign out
-          </button>
-        </div>
+    <div className="flex h-max w-full gap-24 border-r bg-slate-100 px-10 py-4">
+      <Link className="flex items-center gap-2 font-semibold" href="#">
+        <span className="text-5xl font-bold text-[hsl(53,100%,70%)]">
+          Monei
+        </span>
+      </Link>
+      <nav className="flex flex-1 justify-center gap-4 overflow-auto">
+        <NavbarLink href="/summary">
+          <IconHome className="h-4 w-4" />
+          <span className="font-normal">Summary</span>
+        </NavbarLink>
+        <NavbarLink href="/monthly-view/global">
+          <IconShoppingcart className="h-4 w-4" />
+          <span className="font-normal">Monthly view</span>
+        </NavbarLink>
+      </nav>
+      <div>
+        <button
+          className="flex w-full items-center gap-2 rounded p-4 text-sm font-medium text-slate-400 hover:bg-slate-200 hover:text-slate-500"
+          onClick={() => void signOut()}
+        >
+          Sign out
+        </button>
       </div>
     </div>
   );
@@ -71,7 +61,7 @@ const Navbar = () => {
 
 export const MainLayout = (props: { children: React.ReactNode }) => {
   return (
-    <main className="grid h-screen min-h-screen w-full md:grid-cols-[220px_1fr]">
+    <main className="m-auto grid h-screen min-h-screen w-full md:grid-rows-[auto_1fr]">
       <Navbar />
       {props.children}
     </main>
@@ -95,5 +85,66 @@ export const PageLayout = ({ title, icon, children }: PageLayoutProps) => {
         {children}
       </div>
     </div>
+  );
+};
+
+interface MonthlyLayoutProps {
+  children: React.ReactNode;
+}
+
+export const MonthlyLayout = ({ children }: MonthlyLayoutProps) => {
+  const base = "/monthly-view";
+  const { filters, handleOnMonthChange } = useExpenseFilters();
+
+  return (
+    <div className="grid grid-rows-[auto_1fr] gap-10">
+      <div className="flex flex-col gap-16">
+        <div className="w-full border-b border-gray-300 shadow">
+          <div className="m-auto flex w-full items-center gap-10 lg:max-w-3xl">
+            <div className="flex flex-1 gap-5">
+              <MenuLink text="Global" href={`${base}/global`} />
+              <MenuLink text="Expenses" href={`${base}/expenses`} />
+              <MenuLink text="Incomes" href={`${base}/incomes`} />
+            </div>
+            <ArrowFilter
+              currentFilter={getMonthName(filters.start)}
+              onArrowClick={handleOnMonthChange}
+            />
+          </div>
+        </div>
+        <div className="m-auto grid grid-cols-[2fr_1fr] gap-x-10 gap-y-16 lg:max-w-6xl">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface MenuLinkProps {
+  text: string;
+  href: string;
+}
+
+const MenuLink = ({ text, href }: MenuLinkProps) => {
+  const { pathname, query } = useRouter();
+  const isActive = pathname.includes(href);
+
+  return (
+    <Link
+      href={{ pathname: href, query: query }}
+      className={`flex h-12 w-32 items-center justify-center ${
+        isActive ? "border-b-2 border-yellow-400" : ""
+      }`}
+    >
+      <span
+        className={`text-md px-2 text-gray-300 ${
+          isActive
+            ? "font-semibold text-gray-600"
+            : "hover:font-medium hover:text-gray-600"
+        }`}
+      >
+        {text}
+      </span>
+    </Link>
   );
 };

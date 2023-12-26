@@ -1,7 +1,4 @@
-import { IconShoppingcart } from "~/components/icon";
-import { MainLayout, PageLayout } from "~/components/layout";
 import { ExpenseTable } from "../../components/table/shared/expense-table";
-import { ArrowFilter } from "~/components/arrow-filter";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import {
@@ -15,37 +12,33 @@ import { TotalCard } from "~/components/cards/totals";
 import { type Expense } from "~/utils/interfaces";
 import { PieChartCard } from "~/components/cards/pie-chart";
 import { useListExpenses } from "~/hooks/api/expenses";
+import { MonthlyLayout } from "~/components/layout";
+import { useListExpenseCategories } from "~/hooks/api/categories";
 
-export default function Expenses() {
-  const { filters, handleOnMonthChange } = useExpenseFilters();
+export default function MonthlyExpenses() {
+  const { filters } = useExpenseFilters();
   const { currentTotal, previousTotal } = useMonthlyExpenseTotals();
   const expensesList = useListExpenses(filters);
-
+  const mostSpentCategory = useMostSpentCategoryByFilter();
   usePreLoadExpenses();
 
   return (
-    <MainLayout>
-      <PageLayout title="Expenses" icon={<IconShoppingcart />}>
-        <div className="grid gap-10 py-16">
-          <ArrowFilter
-            currentFilter={getMonthName(filters.start)}
-            onArrowClick={handleOnMonthChange}
-          />
-          <div className="grid grid-cols-[2fr_1fr] gap-4">
-            <ExpenseTable />
-            <div className="mt-6 flex flex-col gap-4">
-              <TotalCard
-                title={getMonthName(filters.start)}
-                description="Total expenses"
-                total={currentTotal ?? 0}
-                previousTotal={previousTotal ?? 0}
-              />
-              <PieChartCard data={expensesList.data ?? []} />
-            </div>
-          </div>
-        </div>
-      </PageLayout>
-    </MainLayout>
+    <MonthlyLayout>
+      <TotalCard
+        title={getMonthName(filters.start)}
+        description="Total expenses"
+        total={currentTotal ?? 0}
+        previousTotal={previousTotal ?? 0}
+      />
+      <TotalCard
+        title={mostSpentCategory?.categoryName ?? ""}
+        description="Most spent"
+        total={mostSpentCategory?.current ?? 0}
+        previousTotal={mostSpentCategory?.previous ?? 0}
+      />
+      <ExpenseTable />
+      <PieChartCard data={expensesList.data ?? []} />
+    </MonthlyLayout>
   );
 }
 
@@ -82,7 +75,7 @@ export const useExpenseFilters = () => {
 };
 
 export function usePreLoadExpenses() {
-  const { filters: current } = useExpenseFilters();
+  const current = getFullMonthDates(dayFromDate(new Date()));
   const previous = getFullPreviousMonthDates(current.start);
   const next = getFullNextMonthDates(current.start);
 
@@ -106,4 +99,42 @@ function useMonthlyExpenseTotals() {
   };
 }
 
-Expenses.auth = true;
+function useMostSpentCategoryByFilter() {
+  const { filters: current } = useExpenseFilters();
+  const previous = getFullPreviousMonthDates(current.start);
+  const currentMonthExpense = useListExpenses(current);
+  const previousMonthExpense = useListExpenses(previous);
+
+  const expenseCategories = useListExpenseCategories();
+
+  const amountByCategory = new Map<string, number>();
+  for (const expense of currentMonthExpense.data ?? []) {
+    const categoryId = expense.category?.id ?? "no-category";
+    const amount = amountByCategory.get(categoryId) ?? 0;
+    amountByCategory.set(categoryId, amount + (expense.amount ?? 0));
+  }
+
+  const [maxCategory] = Array.from(amountByCategory.entries()).sort(
+    (a, b) => b[1] - a[1],
+  );
+
+  const previousAmount = previousMonthExpense.data
+    ?.filter((e) => e.category?.id === maxCategory?.[0])
+    .reduce((acc, curr) => acc + (curr.amount ?? 0), 0);
+
+  if (!expenseCategories.data || !maxCategory) {
+    return;
+  }
+
+  const categoryName =
+    expenseCategories.data.find(({ id }) => id === maxCategory[0])?.name ??
+    "No category";
+
+  return {
+    current: maxCategory[1],
+    previous: previousAmount,
+    categoryName: categoryName,
+  };
+}
+
+MonthlyExpenses.auth = true;

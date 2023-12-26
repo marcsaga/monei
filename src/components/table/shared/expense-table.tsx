@@ -2,7 +2,6 @@
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { getInputEditableCell } from "~/components/table";
 import { Table } from "~/components/table/table";
-import { useExpenseFilters } from "~/pages/expenses";
 import {
   type CategoryInputUpdateData,
   getCategoryInputCell,
@@ -16,26 +15,25 @@ import {
 } from "~/hooks/api/expenses";
 import { useCreateExpenseCategory } from "~/hooks/api/categories";
 import { useCallback } from "react";
-
-const columnHelper = createColumnHelper<Expense>();
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const columns: ColumnDef<Expense, any>[] = [
-  columnHelper.accessor("description", {
-    header: () => <span>Description</span>,
-    cell: (input) => getInputEditableCell<Expense>(input, "text"),
-  }),
-  columnHelper.accessor("amount", {
-    cell: (input) => getInputEditableCell<Expense>(input, "number"),
-    header: () => <span>Amount €</span>,
-  }),
-  columnHelper.accessor("category", {
-    cell: (input) => getCategoryInputCell<Expense>(input, "expense"),
-    header: () => <span>Category</span>,
-  }),
-];
+import { useExpenseFilters } from "~/pages/monthly-view/expenses";
 
 export const ExpenseTable = () => {
+  const columnHelper = createColumnHelper<Expense>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: ColumnDef<Expense, any>[] = [
+    columnHelper.accessor("description", {
+      header: () => <span>Description</span>,
+      cell: (input) => getInputEditableCell<Expense>(input, "text"),
+    }),
+    columnHelper.accessor("amount", {
+      cell: (input) => getInputEditableCell<Expense>(input, "number"),
+      header: () => <span className="whitespace-nowrap">Amount €</span>,
+    }),
+    columnHelper.accessor("category", {
+      cell: (input) => getCategoryInputCell<Expense>(input, "expense"),
+      header: () => <span>Category</span>,
+    }),
+  ];
   const { filters } = useExpenseFilters();
   const listExpenses = useListExpenses(filters);
   const createExpense = useCreateExpense(filters);

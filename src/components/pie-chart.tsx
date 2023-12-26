@@ -36,7 +36,7 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
   return (
     <Pie
       data={pieData}
-      width={450}
+      width={425}
       height={400}
       margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
       innerRadius={0.5}
