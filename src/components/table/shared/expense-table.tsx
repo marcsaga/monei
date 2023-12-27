@@ -5,6 +5,7 @@ import { Table } from "~/components/table/table";
 import {
   type CategoryInputUpdateData,
   getCategoryInputCell,
+  useProcessUpdateCategory,
 } from "../category-input";
 import { type Expense } from "~/utils/interfaces";
 import {
@@ -13,8 +14,6 @@ import {
   useListExpenses,
   useUpdateExpense,
 } from "~/hooks/api/expenses";
-import { useCreateExpenseCategory } from "~/hooks/api/categories";
-import { useCallback } from "react";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 const columnHelper = createColumnHelper<Expense>();
@@ -39,8 +38,8 @@ export const ExpenseTable = () => {
   const listExpenses = useListExpenses(filters);
   const createExpense = useCreateExpense(filters);
   const updateExpense = useUpdateExpense(filters);
-  const deleteExpense = useDeleteExpenses(filters);
-  const { processExpenseCategory } = useProcessExpenseCategory();
+  const deleteExpenses = useDeleteExpenses(filters);
+  const { processUpdateCategory } = useProcessUpdateCategory("expense");
 
   async function handleAddRow(
     columnId: keyof Omit<Expense, "id">,
@@ -48,7 +47,7 @@ export const ExpenseTable = () => {
   ) {
     let createValue = value;
     if (columnId === "category") {
-      createValue = await processExpenseCategory(
+      createValue = await processUpdateCategory(
         value as CategoryInputUpdateData,
       );
     }
@@ -68,7 +67,7 @@ export const ExpenseTable = () => {
 
     let updateValue = value;
     if (columnId === "category") {
-      updateValue = await processExpenseCategory(
+      updateValue = await processUpdateCategory(
         value as CategoryInputUpdateData,
       );
     }
@@ -83,7 +82,7 @@ export const ExpenseTable = () => {
   }
 
   function handleDeleteRows(rowIds: string[]) {
-    deleteExpense.mutate({ ids: rowIds });
+    deleteExpenses.mutate({ ids: rowIds });
   }
 
   return (
@@ -98,26 +97,3 @@ export const ExpenseTable = () => {
     />
   );
 };
-
-function useProcessExpenseCategory() {
-  const createCategory = useCreateExpenseCategory();
-  const processExpenseCategory = useCallback(
-    async (input: CategoryInputUpdateData) => {
-      let response: string | null;
-      if (input.type === "create") {
-        const category = await createCategory.mutateAsync({
-          name: input.name,
-          color: input.color,
-        });
-        response = category.id;
-      } else {
-        response = input.id;
-      }
-
-      return response;
-    },
-    [createCategory],
-  );
-
-  return { processExpenseCategory };
-}

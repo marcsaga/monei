@@ -28,10 +28,7 @@ export function useCreateInvestmentCategory() {
   });
 }
 
-export function useDeleteExpenseCategory(
-  type: CategoryType,
-  filters: ExpenseFilter,
-) {
+export function useDeleteCategory(type: CategoryType, filters: ExpenseFilter) {
   const context = api.useContext();
   const listContext = context.expense.list;
   const listCategoryContext =

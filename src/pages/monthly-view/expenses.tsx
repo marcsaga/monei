@@ -26,8 +26,8 @@ export default function MonthlyExpenses() {
       <TotalCard
         title={getMonthName(filters.start)}
         description="Total expenses"
-        total={currentTotal ?? 0}
-        previousTotal={previousTotal ?? 0}
+        total={currentTotal}
+        previousTotal={previousTotal}
       />
       <TotalCard
         title={mostSpentCategory?.categoryName ?? ""}
@@ -61,8 +61,8 @@ function useMonthlyExpenseTotals() {
   const calculate = (acc: number, expense: Expense) =>
     acc + (expense.amount ?? 0);
   return {
-    currentTotal: currentMonthExpense.data?.reduce(calculate, 0),
-    previousTotal: previousMonthExpense.data?.reduce(calculate, 0),
+    currentTotal: currentMonthExpense.data?.reduce(calculate, 0) ?? 0,
+    previousTotal: previousMonthExpense.data?.reduce(calculate, 0) ?? 0,
   };
 }
 

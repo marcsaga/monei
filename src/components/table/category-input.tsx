@@ -11,7 +11,9 @@ import {
 } from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
 import {
-  useDeleteExpenseCategory,
+  useCreateExpenseCategory,
+  useCreateInvestmentCategory,
+  useDeleteCategory,
   useListExpenseCategories,
   useListInvestmentCategories,
 } from "~/hooks/api/categories";
@@ -21,6 +23,12 @@ function useListCategories(type: CategoryType) {
   return type === "investment"
     ? useListInvestmentCategories()
     : useListExpenseCategories();
+}
+
+function useCreateCategory(type: CategoryType) {
+  return type === "investment"
+    ? useCreateInvestmentCategory()
+    : useCreateExpenseCategory();
 }
 
 export type CategoryInputUpdateData =
@@ -41,7 +49,7 @@ export function getCategoryInputCell<T extends object>(
 
   const { filters } = useMonthlyFilters();
   const { data } = useListCategories(type);
-  const deleteCategory = useDeleteExpenseCategory(type, filters);
+  const deleteCategory = useDeleteCategory(type, filters);
   const generateTagColor = useGenerateTagColor(type);
 
   const canCreateNewCategory = !!data && data.length < colors.length;
@@ -52,12 +60,16 @@ export function getCategoryInputCell<T extends object>(
     setNewCategory(e.target.value);
   }
 
-  function onCloseCategory() {
+  function handleResetCategory() {
     table.options.meta?.updateData(index, id, { type: "update", id: null });
     setActiveCategory(undefined);
   }
 
-  function onSelectCategory(tagId: string) {
+  function handleSelectCategory(
+    event: React.BaseSyntheticEvent,
+    tagId: string,
+  ) {
+    event.stopPropagation();
     const category = data?.find((c) => c.id === tagId);
     setActiveCategory(category);
     table.options.meta?.updateData(index, id, { type: "update", id: tagId });
@@ -102,15 +114,13 @@ export function getCategoryInputCell<T extends object>(
   }, [inputRef, newCategory]);
 
   return (
-    <div className="relative w-40">
-      <div
-        className="cursor-pointer"
-        onClick={() => setShowSelector(true)}
-        tabIndex={0}
-        onKeyDown={(e) =>
-          e.key === "Enter" ? setShowSelector(true) : undefined
-        }
-      >
+    <div
+      className="relative flex h-full w-full cursor-pointer items-center"
+      onClick={() => setShowSelector(true)}
+      onKeyDown={(e) => (e.key === "Enter" ? setShowSelector(true) : undefined)}
+      tabIndex={0}
+    >
+      <div>
         {activeCategory ? (
           <TagComponent {...activeCategory} />
         ) : (
@@ -124,7 +134,7 @@ export function getCategoryInputCell<T extends object>(
         >
           <div className="flex h-10 items-center border-b border-gray-100 bg-gray-200 px-4">
             {activeCategory ? (
-              <TagComponent {...activeCategory} onClose={onCloseCategory} />
+              <TagComponent {...activeCategory} onClose={handleResetCategory} />
             ) : (
               canCreateNewCategory && (
                 <input
@@ -147,9 +157,11 @@ export function getCategoryInputCell<T extends object>(
                 tabIndex={0}
                 key={tag.id}
                 className="flex cursor-pointer items-center justify-between px-4 py-1 hover:bg-gray-100"
-                onClick={() => onSelectCategory(tag.id)}
+                onClick={(e) => handleSelectCategory(e, tag.id)}
                 onKeyDown={(e) =>
-                  e.key === "Enter" ? onSelectCategory(tag.id) : undefined
+                  e.key === "Enter"
+                    ? handleSelectCategory(e, tag.id)
+                    : undefined
                 }
               >
                 <TagComponent {...tag} />
@@ -185,4 +197,27 @@ export function useGenerateTagColor(type: CategoryType) {
   }, [data]);
 
   return generate;
+}
+
+export function useProcessUpdateCategory(type: CategoryType) {
+  const createCategory = useCreateCategory(type);
+  const processUpdateCategory = useCallback(
+    async (input: CategoryInputUpdateData) => {
+      let response: string | null;
+      if (input.type === "create") {
+        const category = await createCategory.mutateAsync({
+          name: input.name,
+          color: input.color,
+        });
+        response = category.id;
+      } else {
+        response = input.id;
+      }
+
+      return response;
+    },
+    [createCategory],
+  );
+
+  return { processUpdateCategory };
 }

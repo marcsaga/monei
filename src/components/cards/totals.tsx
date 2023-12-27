@@ -23,7 +23,7 @@ export const TotalCard = ({
 
   return (
     <div
-      className={`card grid w-full grid-cols-2 items-center justify-between gap-1 ${className}`}
+      className={`card grid w-full grid-cols-[1fr_auto] items-center justify-between gap-1 ${className}`}
     >
       <span className="text-xl font-semibold uppercase text-gray-600">
         {description}

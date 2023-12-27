@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { dayFromDate } from "~/utils/date-formatters";
 import { type CategoryColor, type Expense } from "~/utils/interfaces";
 
 export const expenseRouter = createTRPCRouter({
@@ -24,13 +25,10 @@ export const expenseRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
+        date: z.string().refine((val) => /\d{4}(-\d{2}){2}/g.test(val)),
         amount: z.number().nullish(),
         description: z.string().nullish(),
         categoryId: z.string().nullish(),
-        date: z
-          .string()
-          .refine((val) => /\d{4}(-\d{2}){2}/g.test(val))
-          .nullish(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -41,7 +39,7 @@ export const expenseRouter = createTRPCRouter({
           amount: input.amount,
           description: input.description,
           categoryId: input.categoryId,
-          date: input.date ? new Date(input.date) : undefined,
+          date: new Date(input.date),
         },
       });
 
@@ -101,7 +99,7 @@ function fromDTO(dto: ExpenseDTO): Expense {
     id: dto.id,
     amount: dto.amount ?? undefined,
     description: dto.description ?? undefined,
-    date: dto.date?.toISOString().slice(0, 10) ?? undefined,
+    date: dto.date ? dayFromDate(dto.date) : undefined,
     category: dto.category
       ? {
           id: dto.category.id,

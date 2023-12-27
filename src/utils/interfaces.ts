@@ -1,3 +1,12 @@
+export interface Investment {
+  id: string;
+  date: string;
+  contribution?: number;
+  accumulated?: number;
+  totalValue?: number;
+  category?: Category;
+}
+
 export interface Expense {
   id: string;
   amount: number | undefined;
