@@ -79,6 +79,43 @@ export const expenseRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       await ctx.db.expense.deleteMany({ where: { id: { in: input.ids } } });
     }),
+
+  expensesByCategory: protectedProcedure
+    .input(z.object({ start: z.string(), end: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const byCategory = await ctx.db.expense.groupBy({
+        by: ["categoryId"],
+        _sum: { amount: true },
+        where: {
+          userId: ctx.session.user.id,
+          date: { gte: new Date(input.start), lte: new Date(input.end) },
+        },
+      });
+      const categories = await ctx.db.category.findMany({
+        where: { userId: ctx.session.user.id, type: "EXPENSE" },
+      });
+      const byCategoryMap = new Map(
+        byCategory.map(({ categoryId, _sum }) => [categoryId, _sum.amount]),
+      );
+
+      const sorted = categories
+        .map((category) => ({
+          id: category.id,
+          name: category.name,
+          color: category.color as CategoryColor,
+          amount: byCategoryMap.get(category.id) ?? 0,
+        }))
+        .sort((a, b) => b.amount - a.amount);
+
+      sorted.push({
+        id: "no-category",
+        name: "No category",
+        color: "gray",
+        amount: byCategoryMap.get(null) ?? 0,
+      });
+
+      return sorted;
+    }),
 });
 
 interface ExpenseDTO {

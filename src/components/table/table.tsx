@@ -14,6 +14,7 @@ import { BinIcon } from "../icon";
 import { useClickOutside } from "~/hooks/use-click-outside";
 
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Table<TData extends RowData> {
     options: {
       meta?: {
@@ -175,7 +176,7 @@ export function Table<T extends Partial<BaseRow>>({
             return (
               <tr
                 key={row.id}
-                className={`${rowColor} border-b border-gray-100`}
+                className={`${rowColor} border-b border-slate-200`}
               >
                 <td className="group">
                   <Checkbox

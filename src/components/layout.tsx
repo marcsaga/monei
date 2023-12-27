@@ -90,9 +90,13 @@ export const PageLayout = ({ title, icon, children }: PageLayoutProps) => {
 
 interface MonthlyLayoutProps {
   children: React.ReactNode;
+  equalColumns?: boolean;
 }
 
-export const MonthlyLayout = ({ children }: MonthlyLayoutProps) => {
+export const MonthlyLayout = ({
+  children,
+  equalColumns,
+}: MonthlyLayoutProps) => {
   const base = "/monthly-view";
   const { filters, handleOnMonthChange } = useMonthlyFilters();
 
@@ -112,7 +116,11 @@ export const MonthlyLayout = ({ children }: MonthlyLayoutProps) => {
         </div>
       </div>
       <div className="h-full overflow-auto">
-        <div className="m-auto grid grid-cols-[1fr_425px] gap-x-10 gap-y-16 py-16 lg:max-w-6xl">
+        <div
+          className={`m-auto grid ${
+            equalColumns ? "grid-cols-2" : "grid-cols-[1fr_425px]"
+          }  gap-x-10 gap-y-16 py-16 lg:max-w-6xl`}
+        >
           {children}
         </div>
       </div>

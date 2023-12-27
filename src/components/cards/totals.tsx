@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon } from "../icon";
+import { PercentageArrow } from "../percentage-arrow";
 
 interface TotalCardProps {
   total: number;
@@ -19,7 +19,6 @@ export const TotalCard = ({
     previousTotal > 0
       ? Math.round(((total - previousTotal) / previousTotal) * 10000) / 100
       : 0;
-  const hasPostiveDifference = historicPercentage > 0;
 
   return (
     <div
@@ -32,18 +31,7 @@ export const TotalCard = ({
         {total.toFixed(2)}€
       </span>
       <span className="uppercase text-gray-400">{title}</span>
-      <span
-        className={`ml-auto flex items-center gap-1 text-sm font-bold ${
-          hasPostiveDifference ? "text-red-500" : "text-green-500"
-        }`}
-      >
-        {historicPercentage}%
-        {hasPostiveDifference ? (
-          <ArrowUpIcon className="h-4 w-4" />
-        ) : (
-          <ArrowDownIcon className="h-4 w-4" />
-        )}
-      </span>
+      <PercentageArrow percentage={historicPercentage} className="ml-auto" />
     </div>
   );
 };
