@@ -1,10 +1,10 @@
 import { TotalCard } from "~/components/cards/totals";
 import { MonthlyLayout } from "~/components/layout";
-import { useExpenseFilters } from "./expenses";
+import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { getMonthName } from "~/utils/date-formatters";
 
 export default function GlobalMonthly() {
-  const { filters } = useExpenseFilters();
+  const { filters } = useMonthlyFilters();
 
   return (
     <MonthlyLayout>

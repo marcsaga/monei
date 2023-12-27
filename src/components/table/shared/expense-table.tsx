@@ -15,7 +15,7 @@ import {
 } from "~/hooks/api/expenses";
 import { useCreateExpenseCategory } from "~/hooks/api/categories";
 import { useCallback } from "react";
-import { useExpenseFilters } from "~/pages/monthly-view/expenses";
+import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 const columnHelper = createColumnHelper<Expense>();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,7 +35,7 @@ const columns: ColumnDef<Expense, any>[] = [
 ];
 
 export const ExpenseTable = () => {
-  const { filters } = useExpenseFilters();
+  const { filters } = useMonthlyFilters();
   const listExpenses = useListExpenses(filters);
   const createExpense = useCreateExpense(filters);
   const updateExpense = useUpdateExpense(filters);

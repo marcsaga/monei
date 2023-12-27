@@ -1,6 +1,4 @@
 import { ExpenseTable } from "../../components/table/shared/expense-table";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import {
   dayFromDate,
   getFullMonthDates,
@@ -14,12 +12,13 @@ import { PieChartCard } from "~/components/cards/pie-chart";
 import { useListExpenses } from "~/hooks/api/expenses";
 import { MonthlyLayout } from "~/components/layout";
 import { useListExpenseCategories } from "~/hooks/api/categories";
+import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 export default function MonthlyExpenses() {
-  const { filters } = useExpenseFilters();
+  const { filters } = useMonthlyFilters();
   const { currentTotal, previousTotal } = useMonthlyExpenseTotals();
   const expensesList = useListExpenses(filters);
-  const mostSpentCategory = useMostSpentCategoryByFilter();
+  const mostSpentCategory = useMostSpentCategory();
   usePreLoadExpenses();
 
   return (
@@ -42,38 +41,6 @@ export default function MonthlyExpenses() {
   );
 }
 
-const initialFilters = {
-  date: getFullMonthDates(dayFromDate(new Date())).start,
-};
-
-export const useExpenseFilters = () => {
-  const router = useRouter();
-
-  function handleOnMonthChange(direction: 1 | -1) {
-    const date = new Date(router.query.date as string);
-    date.setMonth(date.getMonth() + direction);
-    const newMonthDates = getFullMonthDates(dayFromDate(date));
-
-    void router.replace({
-      query: { ...router.query, date: newMonthDates.start },
-    });
-  }
-
-  useEffect(() => {
-    if (Object.values(router.query).length > 0) {
-      return;
-    }
-    void router.replace({ query: initialFilters });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const { start, end } = getFullMonthDates(
-    router.query.date ? (router.query.date as string) : initialFilters.date,
-  );
-
-  return { filters: { start, end }, handleOnMonthChange };
-};
-
 export function usePreLoadExpenses() {
   const current = getFullMonthDates(dayFromDate(new Date()));
   const previous = getFullPreviousMonthDates(current.start);
@@ -85,7 +52,7 @@ export function usePreLoadExpenses() {
 }
 
 function useMonthlyExpenseTotals() {
-  const current = useExpenseFilters().filters;
+  const current = useMonthlyFilters().filters;
   const previous = getFullPreviousMonthDates(current.start);
 
   const currentMonthExpense = useListExpenses(current);
@@ -99,8 +66,8 @@ function useMonthlyExpenseTotals() {
   };
 }
 
-function useMostSpentCategoryByFilter() {
-  const { filters: current } = useExpenseFilters();
+function useMostSpentCategory() {
+  const { filters: current } = useMonthlyFilters();
   const previous = getFullPreviousMonthDates(current.start);
   const currentMonthExpense = useListExpenses(current);
   const previousMonthExpense = useListExpenses(previous);

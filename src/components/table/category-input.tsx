@@ -15,7 +15,7 @@ import {
   useListExpenseCategories,
   useListInvestmentCategories,
 } from "~/hooks/api/categories";
-import { useExpenseFilters } from "~/pages/monthly-view/expenses";
+import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 function useListCategories(type: CategoryType) {
   return type === "investment"
@@ -39,7 +39,7 @@ export function getCategoryInputCell<T extends object>(
   const dropdownRootRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { filters } = useExpenseFilters();
+  const { filters } = useMonthlyFilters();
   const { data } = useListCategories(type);
   const deleteCategory = useDeleteExpenseCategory(type, filters);
   const generateTagColor = useGenerateTagColor(type);

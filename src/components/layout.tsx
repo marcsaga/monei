@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { IconHome, IconShoppingcart } from "./icon";
 import { ArrowFilter } from "./arrow-filter";
 import { getMonthName } from "~/utils/date-formatters";
-import { useExpenseFilters } from "~/pages/monthly-view/expenses";
+import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 interface NavbarOptionProps {
   href: string;
@@ -94,7 +94,7 @@ interface MonthlyLayoutProps {
 
 export const MonthlyLayout = ({ children }: MonthlyLayoutProps) => {
   const base = "/monthly-view";
-  const { filters, handleOnMonthChange } = useExpenseFilters();
+  const { filters, handleOnMonthChange } = useMonthlyFilters();
 
   return (
     <div className="flex flex-col overflow-hidden">

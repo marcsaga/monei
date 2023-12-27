@@ -1,11 +1,11 @@
 import { TotalCard } from "~/components/cards/totals";
 import { MonthlyLayout } from "~/components/layout";
-import { useExpenseFilters } from "./expenses";
 import { getMonthName } from "~/utils/date-formatters";
 import { InvestmentsTable } from "~/components/table/shared/investments-table";
+import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 export default function IncomesMonthly() {
-  const { filters } = useExpenseFilters();
+  const { filters } = useMonthlyFilters();
 
   return (
     <MonthlyLayout>
