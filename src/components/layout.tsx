@@ -103,7 +103,7 @@ export const MonthlyLayout = ({ children }: MonthlyLayoutProps) => {
           <div className="flex flex-1 gap-5">
             <MenuLink text="Global" href={`${base}/global`} />
             <MenuLink text="Expenses" href={`${base}/expenses`} />
-            <MenuLink text="Incomes" href={`${base}/incomes`} />
+            <MenuLink text="Investments" href={`${base}/investments`} />
           </div>
           <ArrowFilter
             currentFilter={getMonthName(filters.start)}

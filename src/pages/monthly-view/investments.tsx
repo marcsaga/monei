@@ -2,7 +2,7 @@ import { TotalCard } from "~/components/cards/totals";
 import { MonthlyLayout } from "~/components/layout";
 import { useExpenseFilters } from "./expenses";
 import { getMonthName } from "~/utils/date-formatters";
-import { PieChartCard } from "~/components/cards/pie-chart";
+import { InvestmentsTable } from "~/components/table/shared/investments-table";
 
 export default function IncomesMonthly() {
   const { filters } = useExpenseFilters();
@@ -21,12 +21,9 @@ export default function IncomesMonthly() {
         total={0}
         previousTotal={0}
       />
-      <div className="card grid h-72 w-full place-content-center">
-        <span className="text-2xl font-semibold text-gray-500">
-          No incomes yet
-        </span>
+      <div className="col-span-2">
+        <InvestmentsTable />
       </div>
-      <PieChartCard data={[]} />
     </MonthlyLayout>
   );
 }
