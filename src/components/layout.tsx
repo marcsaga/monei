@@ -97,22 +97,22 @@ export const MonthlyLayout = ({ children }: MonthlyLayoutProps) => {
   const { filters, handleOnMonthChange } = useExpenseFilters();
 
   return (
-    <div className="grid grid-rows-[auto_1fr] gap-10">
-      <div className="flex flex-col gap-16">
-        <div className="w-full border-b border-gray-300 shadow">
-          <div className="m-auto flex w-full items-center gap-10 lg:max-w-3xl">
-            <div className="flex flex-1 gap-5">
-              <MenuLink text="Global" href={`${base}/global`} />
-              <MenuLink text="Expenses" href={`${base}/expenses`} />
-              <MenuLink text="Incomes" href={`${base}/incomes`} />
-            </div>
-            <ArrowFilter
-              currentFilter={getMonthName(filters.start)}
-              onArrowClick={handleOnMonthChange}
-            />
+    <div className="flex flex-col overflow-hidden">
+      <div className="relative z-10 w-full border-b border-gray-300 shadow">
+        <div className="m-auto flex w-full items-center gap-10 lg:max-w-3xl">
+          <div className="flex flex-1 gap-5">
+            <MenuLink text="Global" href={`${base}/global`} />
+            <MenuLink text="Expenses" href={`${base}/expenses`} />
+            <MenuLink text="Incomes" href={`${base}/incomes`} />
           </div>
+          <ArrowFilter
+            currentFilter={getMonthName(filters.start)}
+            onArrowClick={handleOnMonthChange}
+          />
         </div>
-        <div className="m-auto grid grid-cols-[2fr_1fr] gap-x-10 gap-y-16 lg:max-w-6xl">
+      </div>
+      <div className="h-full overflow-auto">
+        <div className="m-auto grid grid-cols-[1fr_425px] gap-x-10 gap-y-16 py-16 lg:max-w-6xl">
           {children}
         </div>
       </div>
@@ -132,7 +132,7 @@ const MenuLink = ({ text, href }: MenuLinkProps) => {
   return (
     <Link
       href={{ pathname: href, query: query }}
-      className={`flex h-12 w-32 items-center justify-center ${
+      className={`group flex h-12 w-32 items-center justify-center ${
         isActive ? "border-b-2 border-yellow-400" : ""
       }`}
     >
@@ -140,7 +140,7 @@ const MenuLink = ({ text, href }: MenuLinkProps) => {
         className={`text-md px-2 text-gray-300 ${
           isActive
             ? "font-semibold text-gray-600"
-            : "hover:font-medium hover:text-gray-600"
+            : "group-hover:font-medium group-hover:text-gray-400"
         }`}
       >
         {text}

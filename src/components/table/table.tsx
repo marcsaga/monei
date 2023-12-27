@@ -31,6 +31,7 @@ interface TableProps<T> {
   id: string;
   data: T[];
   columns: ColumnDef<T>[];
+  colSizes?: string[];
   onUpdateData: (
     rowIndex: number,
     columnId: keyof Omit<T, "id">,
@@ -48,6 +49,7 @@ export function Table<T extends Partial<BaseRow>>({
   id,
   data,
   columns,
+  colSizes,
   onUpdateData,
   onAddRow,
   onDeleteRows,
@@ -129,23 +131,23 @@ export function Table<T extends Partial<BaseRow>>({
           onDelete={handleDeleteRows}
         />
       ) : null}
-      <table className="w-full rounded bg-white shadow">
+      <table className="w-full table-fixed rounded border-none bg-white shadow">
         <colgroup>
-          <col className="min-w-[40px]" />
-          <col className="w-2/5" />
+          <col className="w-[56px]" />
+          {colSizes?.map((size, index) => <col key={index} className={size} />)}
         </colgroup>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr
               key={headerGroup.id}
-              className="h-10 bg-gray-100 [&>:first-child]:rounded-tl [&>:last-child]:rounded-tr"
+              className="h-10 bg-gray-200 [&>:first-child]:rounded-tl [&>:last-child]:rounded-tr"
             >
               <th className="group" tabIndex={0}>
                 <Checkbox
                   checked={isSomeRowSelected}
                   className={`${
                     !isSomeRowSelected ? "hidden" : ""
-                  } pl-4 group-hover:flex`}
+                  } px-4 group-hover:flex`}
                   onChange={() => table.toggleAllRowsSelected()}
                   icon={getMainCheckBoxTick()}
                 />
@@ -153,7 +155,7 @@ export function Table<T extends Partial<BaseRow>>({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500"
+                  className="px-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -187,7 +189,7 @@ export function Table<T extends Partial<BaseRow>>({
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="whitespace-nowrap [&>*]:px-4 [&>*]:py-4 [&>*]:text-sm [&>*]:font-medium [&>*]:text-gray-900"
+                    className="h-14 whitespace-nowrap p-0 [&>*]:px-4 [&>*]:text-sm [&>*]:font-medium [&>*]:text-gray-900"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

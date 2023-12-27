@@ -91,6 +91,7 @@ export const ExpenseTable = () => {
       id={`expenses-${filters.start}`}
       data={listExpenses.data ?? []}
       columns={columns}
+      colSizes={["w-2/5"]}
       onUpdateData={handleUpdateRow}
       onAddRow={handleAddRow}
       onDeleteRows={handleDeleteRows}
