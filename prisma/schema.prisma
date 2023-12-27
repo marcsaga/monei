@@ -75,7 +75,7 @@ model Expense {
 }
 
 enum CategoryType {
-  INCOME
+  INVESTMENT
   EXPENSE
 }
 

@@ -1,5 +1,6 @@
 import { api } from "~/utils/api";
 import { type ExpenseFilter } from "./expenses";
+import { type CategoryType } from "~/utils/interfaces";
 
 export function useListExpenseCategories() {
   return api.category.listExpenseCategories.useQuery({}, { staleTime: 60_000 });
@@ -12,16 +13,35 @@ export function useCreateExpenseCategory() {
   });
 }
 
+export function useListInvestmentCategories() {
+  return api.category.listInvestmentCategories.useQuery(
+    {},
+    { staleTime: 60_000 },
+  );
+}
+
+export function useCreateInvestmentCategory() {
+  const context = api.useContext();
+  return api.category.createInvestmentCategory.useMutation({
+    onSuccess: () =>
+      void context.category.listInvestmentCategories.invalidate(),
+  });
+}
+
 export function useDeleteExpenseCategory(
-  _type: "expense" | "income",
+  type: CategoryType,
   filters: ExpenseFilter,
 ) {
   const context = api.useContext();
   const listContext = context.expense.list;
+  const listCategoryContext =
+    type === "expense"
+      ? context.category.listExpenseCategories
+      : context.category.listInvestmentCategories;
 
   return api.category.deleteCategory.useMutation({
     onMutate: ({ id }) => {
-      context.category.listExpenseCategories.setData(
+      listCategoryContext.setData(
         {},
         (prev) => prev?.filter((category) => category.id !== id),
       );
@@ -35,7 +55,7 @@ export function useDeleteExpenseCategory(
       );
     },
     onSuccess: () => {
-      void context.category.listExpenseCategories.invalidate();
+      void listCategoryContext.invalidate();
       void listContext.invalidate();
     },
   });

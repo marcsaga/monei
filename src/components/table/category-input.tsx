@@ -1,22 +1,26 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState, type JSX, useEffect } from "react";
+import React, { useState, type JSX, useEffect, useCallback } from "react";
 import { type CellContext } from "@tanstack/react-table";
-import { TagComponent, useGenerateTagColor } from "../tag";
+import { TagComponent } from "../tag";
 import { useClickOutside } from "~/hooks/use-click-outside";
-import { type CategoryColor, type Category, colors } from "~/utils/interfaces";
+import {
+  type CategoryColor,
+  type Category,
+  type CategoryType,
+  colors,
+} from "~/utils/interfaces";
 import { CrossIcon } from "../icon";
 import {
   useDeleteExpenseCategory,
   useListExpenseCategories,
+  useListInvestmentCategories,
 } from "~/hooks/api/categories";
 import { useExpenseFilters } from "~/pages/monthly-view/expenses";
 
-function useListCategories(_type: "expense" | "income") {
-  return useListExpenseCategories();
-}
-
-function useCurrentViewFilters(_type: "expense" | "income") {
-  return useExpenseFilters();
+function useListCategories(type: CategoryType) {
+  return type === "investment"
+    ? useListInvestmentCategories()
+    : useListExpenseCategories();
 }
 
 export type CategoryInputUpdateData =
@@ -25,7 +29,7 @@ export type CategoryInputUpdateData =
 
 export function getCategoryInputCell<T extends object>(
   { getValue, row: { index }, column: { id }, table }: CellContext<T, unknown>,
-  type: "expense" | "income",
+  type: CategoryType,
 ): JSX.Element {
   const selectedCategory = getValue() as Category | undefined;
   const [activeCategory, setActiveCategory] = useState(selectedCategory);
@@ -35,7 +39,7 @@ export function getCategoryInputCell<T extends object>(
   const dropdownRootRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const { filters } = useCurrentViewFilters(type);
+  const { filters } = useExpenseFilters();
   const { data } = useListCategories(type);
   const deleteCategory = useDeleteExpenseCategory(type, filters);
   const generateTagColor = useGenerateTagColor(type);
@@ -166,4 +170,19 @@ export function getCategoryInputCell<T extends object>(
       )}
     </div>
   );
+}
+
+export function useGenerateTagColor(type: CategoryType) {
+  const { data } = useListCategories(type);
+  const generate = useCallback(() => {
+    const usedColors = new Set(data?.map((category) => category.color) ?? []);
+    const availableColors = colors.filter((color) => !usedColors.has(color));
+
+    return (
+      availableColors[Math.floor(Math.random() * availableColors.length)] ??
+      "red"
+    );
+  }, [data]);
+
+  return generate;
 }

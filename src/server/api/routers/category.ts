@@ -26,6 +26,29 @@ export const categoryRouter = createTRPCRouter({
       return categories.map(fromDTO);
     }),
 
+  createInvestmentCategory: protectedProcedure
+    .input(z.object({ name: z.string(), color: z.enum(colors) }))
+    .mutation(async ({ input, ctx }) => {
+      const expenseCategory = await ctx.db.category.create({
+        data: {
+          name: input.name,
+          color: input.color,
+          type: "INVESTMENT",
+          userId: ctx.session.user.id,
+        },
+      });
+      return fromDTO(expenseCategory);
+    }),
+
+  listInvestmentCategories: protectedProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      const categories = await ctx.db.category.findMany({
+        where: { userId: ctx.session.user.id, type: "INVESTMENT" },
+      });
+      return categories.map(fromDTO);
+    }),
+
   deleteCategory: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {

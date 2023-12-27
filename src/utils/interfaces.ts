@@ -6,6 +6,8 @@ export interface Expense {
   category?: Category;
 }
 
+export type CategoryType = "expense" | "investment";
+
 export interface Category {
   id: string;
   name: string;
