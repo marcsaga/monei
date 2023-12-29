@@ -1,10 +1,10 @@
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { IconHome, IconShoppingcart } from "./icon";
 import { ArrowFilter } from "./arrow-filter";
 import { getMonthName } from "~/utils/date-formatters";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
+import { UserMenu } from "./user-menu";
 
 interface NavbarOptionProps {
   href: string;
@@ -47,14 +47,7 @@ const Navbar = () => {
           <span className="font-normal">Monthly view</span>
         </NavbarLink>
       </nav>
-      <div>
-        <button
-          className="flex w-full items-center gap-2 rounded p-4 text-sm font-medium text-slate-400 hover:bg-slate-200 hover:text-slate-500"
-          onClick={() => void signOut()}
-        >
-          Sign out
-        </button>
-      </div>
+      <UserMenu />
     </div>
   );
 };

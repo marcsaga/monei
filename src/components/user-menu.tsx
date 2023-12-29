@@ -1,3 +1,4 @@
+import { signOut, useSession } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,8 +6,29 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/sha-components/ui/dropdown-menu";
+} from "~/components/ui/dropdown-menu";
+import { ConfigIcon } from "./icon";
 
-const UserMenu = () => {
-  return <DropdownMenu></DropdownMenu>;
+export const UserMenu = () => {
+  const { data } = useSession();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="outline-none">
+        <ConfigIcon />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Hi {data?.user.name}!</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {/* <DropdownMenuItem className="cursor-pointer">
+          Pre-monei investments
+        </DropdownMenuItem> */}
+        <DropdownMenuItem
+          className="cursor-pointer text-red-500 focus:text-red-500"
+          onClick={() => void signOut()}
+        >
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 };
