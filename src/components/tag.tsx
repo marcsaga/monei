@@ -19,6 +19,7 @@ export const hexColorDict: Record<CategoryColor | "no-category", string> = {
   teal: "#99f6e4",
   orange: "#fed7aa",
   "no-category": "#e5e7eb",
+  gray: "#e5e7eb",
 };
 
 // bg-color-300
@@ -35,20 +36,21 @@ export const hexColorDict: Record<CategoryColor | "no-category", string> = {
 //   "no-category": "#d1d5db",
 // };
 
-export const TagComponent = ({ name, color, onClose }: TagComponentProps) => {
-  const colorMap: Record<CategoryColor | "no-category", string> = {
-    red: "bg-red-200",
-    blue: "bg-blue-200",
-    green: "bg-green-200",
-    yellow: "bg-yellow-200",
-    purple: "bg-purple-200",
-    pink: "bg-pink-200",
-    indigo: "bg-indigo-200",
-    teal: "bg-teal-200",
-    orange: "bg-orange-200",
-    "no-category": "bg-gray-200",
-  };
+const colorMap: Record<CategoryColor | "no-category", string> = {
+  red: "bg-red-200",
+  blue: "bg-blue-200",
+  green: "bg-green-200",
+  yellow: "bg-yellow-200",
+  purple: "bg-purple-200",
+  pink: "bg-pink-200",
+  indigo: "bg-indigo-200",
+  teal: "bg-teal-200",
+  orange: "bg-orange-200",
+  "no-category": "bg-gray-200",
+  gray: "bg-gray-200",
+};
 
+export const TagComponent = ({ name, color, onClose }: TagComponentProps) => {
   return (
     <span
       className={`flex w-min items-center gap-1 whitespace-nowrap rounded-sm px-1 py-[2px] text-xs font-semibold text-gray-500 ${
