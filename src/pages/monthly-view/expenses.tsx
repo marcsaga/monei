@@ -51,7 +51,7 @@ export function usePreLoadExpenses() {
   useListExpenses(current);
 }
 
-function useMonthlyExpenseTotals() {
+export function useMonthlyExpenseTotals() {
   const current = useMonthlyFilters().filters;
   const previous = getFullPreviousMonthDates(current.start);
 

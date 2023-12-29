@@ -106,6 +106,24 @@ export const investmentRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       await ctx.db.investment.deleteMany({ where: { id: { in: input.ids } } });
     }),
+
+  getLatestInvestmentByCategory: protectedProcedure
+    .input(z.object({ start: z.string(), end: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const dtos = await ctx.db.$queryRaw<GroupedInvestmentDTO[]>`
+        SELECT "id","name","color", (SELECT total_value FROM "investment" WHERE "category_id" = "category"."id" and "date" <= ${new Date(
+          input.end,
+        )} ORDER BY "date" DESC LIMIT 1) as total_value
+        FROM "category"
+        WHERE "user_id" = ${ctx.session.user.id} 
+        AND "type" = 'INVESTMENT'
+        GROUP BY "id"
+      `;
+
+      return dtos
+        .map(fromGroupedInvestmentDTO)
+        .sort((a, b) => (b.totalValue ?? 0) - (a.totalValue ?? 0));
+    }),
 });
 
 interface InvestmentDTO {
@@ -135,5 +153,21 @@ function fromDTO(dto: InvestmentDTO): Investment {
           color: dto.category.color as CategoryColor,
         }
       : undefined,
+  };
+}
+
+interface GroupedInvestmentDTO {
+  id: string;
+  name: string;
+  color: string;
+  total_value: number | null;
+}
+
+function fromGroupedInvestmentDTO(dto: GroupedInvestmentDTO) {
+  return {
+    id: dto.id,
+    name: dto.name,
+    color: dto.color as CategoryColor,
+    totalValue: dto.total_value ?? undefined,
   };
 }

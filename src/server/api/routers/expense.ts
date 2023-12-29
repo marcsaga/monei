@@ -91,12 +91,12 @@ export const expenseRouter = createTRPCRouter({
           date: { gte: new Date(input.start), lte: new Date(input.end) },
         },
       });
-      const categories = await ctx.db.category.findMany({
-        where: { userId: ctx.session.user.id, type: "EXPENSE" },
-      });
       const byCategoryMap = new Map(
         byCategory.map(({ categoryId, _sum }) => [categoryId, _sum.amount]),
       );
+      const categories = await ctx.db.category.findMany({
+        where: { userId: ctx.session.user.id, type: "EXPENSE" },
+      });
 
       const sorted = categories
         .map((category) => ({
