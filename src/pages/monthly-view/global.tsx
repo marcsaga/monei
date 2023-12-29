@@ -1,6 +1,6 @@
 import { TotalCard } from "~/components/cards/totals";
-import { GlobalExpensesList } from "~/components/global-expenses-list";
-import { GlobalInvestmentsList } from "~/components/global-investments-list";
+import { GlobalExpensesList } from "~/components/list/implementations/global-expenses-list";
+import { GlobalInvestmentsList } from "~/components/list/implementations/global-investments-list";
 import { MonthlyLayout } from "~/components/layout";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import {

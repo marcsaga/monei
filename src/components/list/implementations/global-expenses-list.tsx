@@ -1,9 +1,9 @@
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { api } from "~/utils/api";
-import { List } from "./list";
-import { TagComponent } from "./tag";
+import { List } from "../list";
+import { TagComponent } from "../../tag";
 import { getFullPreviousMonthDates } from "~/utils/date-formatters";
-import { PercentageArrow } from "./percentage-arrow";
+import { PercentageArrow } from "../../percentage-arrow";
 
 export const GlobalExpensesList = () => {
   const data = useGetExpensesByCategory();

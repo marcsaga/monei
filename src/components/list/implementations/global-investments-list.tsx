@@ -1,18 +1,21 @@
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { api } from "~/utils/api";
-import { List } from "./list";
-import { TagComponent } from "./tag";
+import { List } from "../list";
+import { TagComponent } from "../../tag";
 import { getFullPreviousMonthDates } from "~/utils/date-formatters";
-import { PercentageArrow } from "./percentage-arrow";
+import { PercentageArrow } from "../../percentage-arrow";
 
 export const GlobalInvestmentsList = () => {
   const data = useGetInvestmentsBreakdown();
 
   return (
     <div className="flex flex-col gap-4">
-      <h4 className="text-md font-semibold uppercase text-gray-600">
-        Investments breakdown (by value)
-      </h4>
+      <div>
+        <h4 className="text-md font-semibold uppercase text-gray-600">
+          Investments breakdown (by value)
+        </h4>
+        <button>Settings</button>
+      </div>
       <List data={data ?? []} />
     </div>
   );
