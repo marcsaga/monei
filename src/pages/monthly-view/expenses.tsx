@@ -35,7 +35,7 @@ export default function MonthlyExpenses() {
         total={mostSpentCategory?.current ?? 0}
         previousTotal={mostSpentCategory?.previous ?? 0}
       />
-      <ExpenseTable />
+      <ExpenseTable filters={filters} />
       <PieChartCard data={expensesList.data ?? []} />
     </MonthlyLayout>
   );

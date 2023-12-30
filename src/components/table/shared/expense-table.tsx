@@ -9,12 +9,12 @@ import {
 } from "../category-input";
 import { type Expense } from "~/utils/interfaces";
 import {
+  type ExpenseFilter,
   useCreateExpense,
   useDeleteExpenses,
   useListExpenses,
   useUpdateExpense,
 } from "~/hooks/api/expenses";
-import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 
 const columnHelper = createColumnHelper<Expense>();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,8 +33,11 @@ const columns: ColumnDef<Expense, any>[] = [
   }),
 ];
 
-export const ExpenseTable = () => {
-  const { filters } = useMonthlyFilters();
+interface ExpenseTableProps {
+  filters: ExpenseFilter;
+}
+
+export const ExpenseTable = ({ filters }: ExpenseTableProps) => {
   const listExpenses = useListExpenses(filters);
   const createExpense = useCreateExpense(filters);
   const updateExpense = useUpdateExpense(filters);
