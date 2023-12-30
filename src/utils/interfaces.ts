@@ -1,6 +1,6 @@
 export interface Investment {
   id: string;
-  date: string;
+  date?: string;
   contribution?: number;
   accumulated?: number;
   totalValue?: number;

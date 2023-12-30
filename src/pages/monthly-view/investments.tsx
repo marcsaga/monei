@@ -23,7 +23,7 @@ export default function IncomesMonthly() {
       />
       <span />
       <div className="col-span-2">
-        <InvestmentTable />
+        <InvestmentTable filters={filters} />
       </div>
     </MonthlyLayout>
   );

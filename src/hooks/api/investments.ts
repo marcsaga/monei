@@ -1,8 +1,8 @@
 import { api } from "~/utils/api";
 
 export interface InvestmentFilter {
-  start: string;
-  end: string;
+  start: string | null;
+  end: string | null;
 }
 
 export function useListInvestments({ start, end }: InvestmentFilter) {

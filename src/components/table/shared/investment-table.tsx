@@ -8,7 +8,6 @@ import {
   useProcessUpdateCategory,
 } from "../category-input";
 import { getInputEditableCell } from "../input";
-import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import {
   useCreateInvestment,
   useDeleteInvestments,
@@ -41,8 +40,14 @@ const columns: ColumnDef<Investment, any>[] = [
   }),
 ];
 
-export function InvestmentTable() {
-  const { filters } = useMonthlyFilters();
+interface InvestmentTableProps {
+  filters: {
+    start: string | null;
+    end: string | null;
+  };
+}
+
+export function InvestmentTable({ filters }: InvestmentTableProps) {
   const listInvestments = useListInvestments(filters);
   const createInvestment = useCreateInvestment(filters);
   const updateInvestment = useUpdateInvestment(filters);

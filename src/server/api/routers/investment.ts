@@ -7,14 +7,23 @@ export const investmentRouter = createTRPCRouter({
   list: protectedProcedure
     .input(z.object({ start: z.string().nullish(), end: z.string().nullish() }))
     .query(async ({ ctx, input }) => {
+      let dateFilter: {
+        gte: Date | undefined;
+        lte: Date | undefined;
+      } | null;
+      if (input.start === null && input.end === null) {
+        dateFilter = null;
+      } else {
+        dateFilter = {
+          gte: input.start ? new Date(input.start) : undefined,
+          lte: input.end ? new Date(input.end) : undefined,
+        };
+      }
       const investments = await ctx.db.investment.findMany({
         include: { category: true },
         where: {
           userId: ctx.session.user.id,
-          date: {
-            gte: input.start ? new Date(input.start) : undefined,
-            lte: input.end ? new Date(input.end) : undefined,
-          },
+          date: dateFilter,
         },
         orderBy: { createdAt: "asc" },
       });
@@ -53,7 +62,10 @@ export const investmentRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        date: z.string().refine((val) => /\d{4}(-\d{2}){2}/g.test(val)),
+        date: z
+          .string()
+          .refine((val) => /\d{4}(-\d{2}){2}/g.test(val))
+          .nullable(),
         contribution: z.number().nullish(),
         categoryId: z.string().nullish(),
         totalValue: z.number().nullish(),
@@ -67,7 +79,7 @@ export const investmentRouter = createTRPCRouter({
           contribution: input.contribution,
           categoryId: input.categoryId,
           totalValue: input.totalValue,
-          date: new Date(input.date),
+          date: input.date ? new Date(input.date) : input.date,
         },
       });
 
@@ -128,7 +140,7 @@ export const investmentRouter = createTRPCRouter({
 
 interface InvestmentDTO {
   id: string;
-  date: Date;
+  date: Date | null;
   contribution: number | null;
   accumulated: number | null | undefined;
   totalValue: number | null;
@@ -142,7 +154,7 @@ interface InvestmentDTO {
 function fromDTO(dto: InvestmentDTO): Investment {
   return {
     id: dto.id,
-    date: dayFromDate(dto.date),
+    date: dto.date ? dayFromDate(dto.date) : undefined,
     contribution: dto.contribution ?? undefined,
     accumulated: dto.accumulated ?? undefined,
     totalValue: dto.totalValue ?? undefined,
