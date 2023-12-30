@@ -14,7 +14,6 @@ export const GlobalInvestmentsList = () => {
         <h4 className="text-md font-semibold uppercase text-gray-600">
           Investments breakdown (by value)
         </h4>
-        <button>Settings</button>
       </div>
       <List data={data ?? []} />
     </div>
