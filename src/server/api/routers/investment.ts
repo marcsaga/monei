@@ -3,27 +3,51 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { type CategoryColor, type Investment } from "~/utils/interfaces";
 import { dayFromDate } from "~/utils/date-formatters";
 
+type DateFilter = {
+  gte?: Date;
+  lte?: Date;
+  lt?: Date;
+  gt?: Date;
+} | null;
+
+interface DateInput {
+  start?: string | null | undefined;
+  end?: string | null | undefined;
+}
+
+function getListInvestmentsDateFilter(input: DateInput): DateFilter {
+  if (input.start === null && input.end === null) {
+    return null;
+  } else {
+    return {
+      gte: input.start ? new Date(input.start) : undefined,
+      lte: input.end ? new Date(input.end) : undefined,
+    };
+  }
+}
+
+function getAccumulatedDateFilter(input: DateInput) {
+  if (input.start === null && input.end === null) {
+    return { date: null };
+  } else {
+    return {
+      OR: [
+        { date: { lt: input.start ? new Date(input.start) : undefined } },
+        { date: null },
+      ],
+    };
+  }
+}
+
 export const investmentRouter = createTRPCRouter({
   list: protectedProcedure
     .input(z.object({ start: z.string().nullish(), end: z.string().nullish() }))
     .query(async ({ ctx, input }) => {
-      let dateFilter: {
-        gte: Date | undefined;
-        lte: Date | undefined;
-      } | null;
-      if (input.start === null && input.end === null) {
-        dateFilter = null;
-      } else {
-        dateFilter = {
-          gte: input.start ? new Date(input.start) : undefined,
-          lte: input.end ? new Date(input.end) : undefined,
-        };
-      }
       const investments = await ctx.db.investment.findMany({
         include: { category: true },
         where: {
           userId: ctx.session.user.id,
-          date: dateFilter,
+          date: getListInvestmentsDateFilter(input),
         },
         orderBy: { createdAt: "asc" },
       });
@@ -38,23 +62,17 @@ export const investmentRouter = createTRPCRouter({
               .map(({ categoryId }) => categoryId) as string[],
           },
           userId: ctx.session.user.id,
-          date: { lt: input.start ? new Date(input.start) : undefined },
+          ...getAccumulatedDateFilter(input),
         },
       });
-
       const accumulatedByCategory = new Map(
-        accumulated.map(({ categoryId, _sum }) => [
-          categoryId,
-          _sum.contribution,
-        ]),
+        accumulated.map(({ categoryId: id, _sum }) => [id, _sum.contribution]),
       );
 
       return investments.map((investment) =>
         fromDTO({
           ...investment,
-          accumulated:
-            (accumulatedByCategory.get(investment.categoryId) ?? 0) +
-            (investment.contribution ?? 0),
+          accumulated: accumulatedByCategory.get(investment.categoryId) ?? 0,
         }),
       );
     }),
@@ -123,9 +141,11 @@ export const investmentRouter = createTRPCRouter({
     .input(z.object({ start: z.string(), end: z.string() }))
     .query(async ({ ctx, input }) => {
       const dtos = await ctx.db.$queryRaw<GroupedInvestmentDTO[]>`
-        SELECT "id","name","color", (SELECT total_value FROM "investment" WHERE "category_id" = "category"."id" and "date" <= ${new Date(
-          input.end,
-        )} ORDER BY "date" DESC LIMIT 1) as total_value
+        SELECT "id","name","color", (SELECT total_value FROM "investment" 
+                                    WHERE "category_id" = "category"."id" and "date" <= ${new Date(
+                                      input.end,
+                                    )} 
+                                    ORDER BY "date" DESC LIMIT 1) as total_value
         FROM "category"
         WHERE "user_id" = ${ctx.session.user.id} 
         AND "type" = 'INVESTMENT'

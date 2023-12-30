@@ -4,29 +4,62 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { ConfigIcon } from "./icon";
+import { ConfigurationModal } from "./configuration-modal/configuration-modal";
+import { useRouter } from "next/router";
 
 export const UserDropdown = () => {
   const { data } = useSession();
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none">
-        <ConfigIcon />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Hi {data?.user.name}!</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+  const router = useRouter();
 
-        <DropdownMenuItem
-          className="cursor-pointer text-red-500 focus:text-red-500"
-          onClick={() => void signOut()}
-        >
-          Sign out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+  function handleOnOpenConfig() {
+    void router.replace({
+      query: { ...router.query, showConfig: "true" },
+    });
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="outline-none">
+          <ConfigIcon />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuLabel className="font-medium">
+            Hi {data?.user.name}!
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="cursor-pointer">
+              Configuration
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleOnOpenConfig}
+                >
+                  Investments
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+          <DropdownMenuItem
+            className="cursor-pointer text-red-500 focus:text-red-500"
+            onClick={() => void signOut()}
+          >
+            Sign out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ConfigurationModal />
+    </>
   );
 };
