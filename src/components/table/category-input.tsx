@@ -18,17 +18,51 @@ import {
   useListInvestmentCategories,
 } from "~/hooks/api/categories";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
+import {
+  type InvestmentFilter,
+  useListInvestments,
+} from "~/hooks/api/investments";
+import { useRouter } from "next/router";
 
-function useListCategories(type: CategoryType) {
-  return type === "investment"
-    ? useListInvestmentCategories()
-    : useListExpenseCategories();
+function useListCategories(type: CategoryType, opts?: { filterUsed: true }) {
+  const { query } = useRouter();
+  const { filters } = useMonthlyFilters();
+
+  if (!opts?.filterUsed || type === "expense") {
+    return type === "expense"
+      ? useListExpenseCategories().data
+      : useListInvestmentCategories().data;
+  }
+
+  let investmentFilter: InvestmentFilter = filters;
+  if (query.showConfig === "true") {
+    investmentFilter = { start: null, end: null };
+  }
+
+  const { data: investments } = useListInvestments(investmentFilter);
+  const { data: categories } = useListInvestmentCategories();
+  const usedCategories = new Set(
+    investments?.map(({ category }) => category?.id),
+  );
+
+  return categories?.filter(({ id }) => !usedCategories.has(id));
 }
 
 function useCreateCategory(type: CategoryType) {
   return type === "investment"
     ? useCreateInvestmentCategory()
     : useCreateExpenseCategory();
+}
+
+function getDropdownCopy(categories?: Category[]) {
+  if (categories?.length === 0) {
+    return "Create a category and press enter";
+  }
+  if (!!categories && categories.length < colors.length) {
+    return "Select or create a category";
+  }
+
+  return "Select a category";
 }
 
 export type CategoryInputUpdateData =
@@ -48,12 +82,9 @@ export function getCategoryInputCell<T extends object>(
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { filters } = useMonthlyFilters();
-  const { data } = useListCategories(type);
+  const categories = useListCategories(type, { filterUsed: true });
   const deleteCategory = useDeleteCategory(type, filters);
   const generateTagColor = useGenerateTagColor(type);
-
-  const canCreateNewCategory = !!data && data.length < colors.length;
-
   useClickOutside(dropdownRootRef, () => setShowSelector(false));
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -70,7 +101,7 @@ export function getCategoryInputCell<T extends object>(
     tagId: string,
   ) {
     event.stopPropagation();
-    const category = data?.find((c) => c.id === tagId);
+    const category = categories?.find((c) => c.id === tagId);
     setActiveCategory(category);
     table.options.meta?.updateData(index, id, { type: "update", id: tagId });
     setShowSelector(false);
@@ -136,7 +167,7 @@ export function getCategoryInputCell<T extends object>(
             {activeCategory ? (
               <TagComponent {...activeCategory} onClose={handleResetCategory} />
             ) : (
-              canCreateNewCategory && (
+              (categories?.length ?? 0) < colors.length && (
                 <input
                   ref={inputRef}
                   className="h-full w-full bg-gray-200 outline-none"
@@ -147,12 +178,10 @@ export function getCategoryInputCell<T extends object>(
             )}
           </div>
           <span className="px-4 py-2 text-xs text-gray-500">
-            {canCreateNewCategory
-              ? "Select an option or create one"
-              : "Select an option"}
+            {getDropdownCopy(categories)}
           </span>
           <ul className="max-h-[154px] overflow-auto pb-2">
-            {data?.map((tag) => (
+            {categories?.map((tag) => (
               <li
                 tabIndex={0}
                 key={tag.id}
@@ -185,16 +214,18 @@ export function getCategoryInputCell<T extends object>(
 }
 
 export function useGenerateTagColor(type: CategoryType) {
-  const { data } = useListCategories(type);
+  const categories = useListCategories(type);
   const generate = useCallback(() => {
-    const usedColors = new Set(data?.map((category) => category.color) ?? []);
+    const usedColors = new Set(
+      categories?.map((category) => category.color) ?? [],
+    );
     const availableColors = colors.filter((color) => !usedColors.has(color));
 
     return (
       availableColors[Math.floor(Math.random() * availableColors.length)] ??
       "red"
     );
-  }, [data]);
+  }, [categories]);
 
   return generate;
 }
