@@ -4,7 +4,7 @@ import { IconHome, IconShoppingcart } from "./icon";
 import { ArrowFilter } from "./arrow-filter";
 import { getMonthName } from "~/utils/date-formatters";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
-import { UserMenu } from "./user-menu";
+import { UserDropdown } from "./user-dropdown";
 
 interface NavbarOptionProps {
   href: string;
@@ -47,7 +47,7 @@ const Navbar = () => {
           <span className="font-normal">Monthly view</span>
         </NavbarLink>
       </nav>
-      <UserMenu />
+      <UserDropdown />
     </div>
   );
 };

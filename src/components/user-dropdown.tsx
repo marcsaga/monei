@@ -6,10 +6,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 import { ConfigIcon } from "./icon";
 
-export const UserMenu = () => {
+export const UserDropdown = () => {
   const { data } = useSession();
   return (
     <DropdownMenu>
@@ -19,9 +19,7 @@ export const UserMenu = () => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Hi {data?.user.name}!</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* <DropdownMenuItem className="cursor-pointer">
-          Pre-monei investments
-        </DropdownMenuItem> */}
+
         <DropdownMenuItem
           className="cursor-pointer text-red-500 focus:text-red-500"
           onClick={() => void signOut()}
