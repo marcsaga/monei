@@ -15,7 +15,11 @@ import { ConfigIcon } from "./icon";
 import { ConfigurationModal } from "./configuration-modal/configuration-modal";
 import { useRouter } from "next/router";
 
-export const UserDropdown = () => {
+interface UserDropdownProps {
+  className?: string;
+}
+
+export const UserDropdown = ({ className }: UserDropdownProps) => {
   const { data } = useSession();
   const router = useRouter();
 
@@ -28,7 +32,7 @@ export const UserDropdown = () => {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none">
+        <DropdownMenuTrigger className={`outline-none ${className}`}>
           <ConfigIcon />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-44">

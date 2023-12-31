@@ -4,18 +4,19 @@ import { getMonthName } from "~/utils/date-formatters";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationMenu } from "./navigation-menu";
+import { DEFAULT_PATH } from "~/utils/constants";
 
 const Navbar = () => {
   return (
     <div className="w-full bg-[hsl(53,100%,70%)]/20 px-12">
-      <div className="relative mx-auto flex h-max w-full items-center justify-between gap-24 py-4 lg:max-w-7xl">
-        <Link className="flex items-center gap-2 font-semibold" href="#">
+      <div className="mx-auto grid h-max w-full grid-cols-[1fr_2fr_1fr] items-center justify-between gap-8 py-4 lg:max-w-7xl">
+        <Link href={DEFAULT_PATH}>
           <span className="text-5xl font-bold text-[hsl(53,100%,70%)]">
             Monei
           </span>
         </Link>
         <NavigationMenu
-          className="absolute w-full max-w-none text-lg [&_ul]:gap-20"
+          className="mx-auto max-w-none text-lg [&_ul]:gap-20"
           items={[
             { name: "Summary", linkBase: "/summary" },
             {
@@ -25,7 +26,7 @@ const Navbar = () => {
             },
           ]}
         />
-        <UserDropdown />
+        <UserDropdown className="justify-self-end" />
       </div>
     </div>
   );
