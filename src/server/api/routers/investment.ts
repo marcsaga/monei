@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { type CategoryColor, type Investment } from "~/utils/interfaces";
 import { dayFromDate } from "~/utils/date-formatters";
+import { Prisma } from "@prisma/client";
 
 type DateFilter = {
   gte?: Date;
@@ -26,17 +27,9 @@ function getListInvestmentsDateFilter(input: DateInput): DateFilter {
   }
 }
 
-function getAccumulatedDateFilter(input: DateInput) {
-  if (input.start === null && input.end === null) {
-    return { date: null };
-  } else {
-    return {
-      OR: [
-        { date: { lt: input.start ? new Date(input.start) : undefined } },
-        { date: null },
-      ],
-    };
-  }
+interface InvestmentPreviousValue {
+  id: string;
+  market_value: number | null;
 }
 
 export const investmentRouter = createTRPCRouter({
@@ -52,27 +45,37 @@ export const investmentRouter = createTRPCRouter({
         orderBy: { createdAt: "asc" },
       });
 
-      const accumulated = await ctx.db.investment.groupBy({
-        by: "categoryId",
-        _sum: { contribution: true },
-        where: {
-          categoryId: {
-            in: investments
-              .filter(({ categoryId }) => categoryId !== null)
-              .map(({ categoryId }) => categoryId) as string[],
-          },
-          userId: ctx.session.user.id,
-          ...getAccumulatedDateFilter(input),
-        },
-      });
-      const accumulatedByCategory = new Map(
-        accumulated.map(({ categoryId: id, _sum }) => [id, _sum.contribution]),
+      const categoryIDs = new Set(
+        investments
+          .filter(({ categoryId }) => !!categoryId)
+          .map(({ categoryId }) => categoryId),
       );
+
+      let previousByCategory = new Map<string, number>();
+      if (input.start && categoryIDs.size > 0) {
+        const dtos = await ctx.db.$queryRaw<InvestmentPreviousValue[]>`
+        SELECT "id", (SELECT market_value FROM "investment" 
+                      WHERE "category_id" = "category"."id" and "date" < ${new Date(
+                        input.start,
+                      )} 
+                      ORDER BY "date" DESC LIMIT 1) as market_value
+        FROM "category"
+        WHERE "user_id" = ${ctx.session.user.id} 
+        AND "type" = 'INVESTMENT'
+        AND "id" in (${Prisma.join([...categoryIDs.values()])})
+        GROUP BY "id"
+      `;
+        previousByCategory = new Map(
+          dtos.map(({ id, market_value }) => [id, market_value ?? 0]),
+        );
+      }
 
       return investments.map((investment) =>
         fromDTO({
           ...investment,
-          accumulated: accumulatedByCategory.get(investment.categoryId) ?? 0,
+          previousMarketValue: investment.categoryId
+            ? previousByCategory.get(investment.categoryId)
+            : null,
         }),
       );
     }),
@@ -86,7 +89,7 @@ export const investmentRouter = createTRPCRouter({
           .nullable(),
         contribution: z.number().nullish(),
         categoryId: z.string().nullish(),
-        totalValue: z.number().nullish(),
+        marketValue: z.number().nullish(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -96,7 +99,7 @@ export const investmentRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           contribution: input.contribution,
           categoryId: input.categoryId,
-          totalValue: input.totalValue,
+          marketValue: input.marketValue,
           date: input.date ? new Date(input.date) : input.date,
         },
       });
@@ -114,7 +117,7 @@ export const investmentRouter = createTRPCRouter({
           .nullish(),
         contribution: z.number().nullish(),
         categoryId: z.string().nullish(),
-        totalValue: z.number().nullish(),
+        marketValue: z.number().nullish(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -123,7 +126,7 @@ export const investmentRouter = createTRPCRouter({
         data: {
           contribution: input.contribution,
           categoryId: input.categoryId,
-          totalValue: input.totalValue,
+          marketValue: input.marketValue,
           date: input.date ? new Date(input.date) : undefined,
         },
       });
@@ -141,11 +144,11 @@ export const investmentRouter = createTRPCRouter({
     .input(z.object({ start: z.string(), end: z.string() }))
     .query(async ({ ctx, input }) => {
       const dtos = await ctx.db.$queryRaw<GroupedInvestmentDTO[]>`
-        SELECT "id","name","color", (SELECT total_value FROM "investment" 
+        SELECT "id","name","color", (SELECT market_value FROM "investment" 
                                     WHERE "category_id" = "category"."id" and "date" <= ${new Date(
                                       input.end,
                                     )} 
-                                    ORDER BY "date" DESC LIMIT 1) as total_value
+                                    ORDER BY "date" DESC LIMIT 1) as market_value
         FROM "category"
         WHERE "user_id" = ${ctx.session.user.id} 
         AND "type" = 'INVESTMENT'
@@ -154,7 +157,7 @@ export const investmentRouter = createTRPCRouter({
 
       return dtos
         .map(fromGroupedInvestmentDTO)
-        .sort((a, b) => (b.totalValue ?? 0) - (a.totalValue ?? 0));
+        .sort((a, b) => (b.marketValue ?? 0) - (a.marketValue ?? 0));
     }),
 });
 
@@ -162,8 +165,8 @@ interface InvestmentDTO {
   id: string;
   date: Date | null;
   contribution: number | null;
-  accumulated: number | null | undefined;
-  totalValue: number | null;
+  marketValue: number | null;
+  previousMarketValue: number | null | undefined;
   category: {
     id: string;
     name: string;
@@ -176,8 +179,8 @@ function fromDTO(dto: InvestmentDTO): Investment {
     id: dto.id,
     date: dto.date ? dayFromDate(dto.date) : undefined,
     contribution: dto.contribution ?? undefined,
-    accumulated: dto.accumulated ?? undefined,
-    totalValue: dto.totalValue ?? undefined,
+    marketValue: dto.marketValue ?? undefined,
+    previousMarketValue: dto.previousMarketValue ?? undefined,
     category: dto.category
       ? {
           id: dto.category.id,
@@ -192,7 +195,7 @@ interface GroupedInvestmentDTO {
   id: string;
   name: string;
   color: string;
-  total_value: number | null;
+  market_value: number | null;
 }
 
 function fromGroupedInvestmentDTO(dto: GroupedInvestmentDTO) {
@@ -200,6 +203,6 @@ function fromGroupedInvestmentDTO(dto: GroupedInvestmentDTO) {
     id: dto.id,
     name: dto.name,
     color: dto.color as CategoryColor,
-    totalValue: dto.total_value ?? undefined,
+    marketValue: dto.market_value ?? undefined,
   };
 }

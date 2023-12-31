@@ -22,21 +22,21 @@ const columns: ColumnDef<Investment, any>[] = [
     header: () => <span>Category</span>,
     cell: (input) => getCategoryInputCell<Investment>(input, "investment"),
   }),
-  columnHelper.accessor("accumulated", {
+  columnHelper.accessor("contribution", {
+    cell: (input) => getInputEditableCell<Investment>(input, "number"),
+    header: () => <span>Contribution</span>,
+  }),
+  columnHelper.accessor("marketValue", {
+    cell: (input) => getInputEditableCell<Investment>(input, "number"),
+    header: () => <span>Market value</span>,
+  }),
+  columnHelper.accessor("previousMarketValue", {
     cell: (input) => (
       <div className="flex h-full w-full items-center bg-gray-100">
         {input.getValue()}
       </div>
     ),
-    header: () => <span>Accumulated</span>,
-  }),
-  columnHelper.accessor("contribution", {
-    cell: (input) => getInputEditableCell<Investment>(input, "number"),
-    header: () => <span>Contribution</span>,
-  }),
-  columnHelper.accessor("totalValue", {
-    cell: (input) => getInputEditableCell<Investment>(input, "number"),
-    header: () => <span>EOM Value</span>,
+    header: () => <span>Previous M.V.</span>,
   }),
 ];
 

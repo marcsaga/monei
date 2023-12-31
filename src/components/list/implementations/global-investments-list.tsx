@@ -34,13 +34,13 @@ function useGetInvestmentsBreakdown() {
       end: previous.end,
     });
   const previousByCategory = new Map(
-    previousInvestments.data?.map((item) => [item.id, item.totalValue]) ?? [],
+    previousInvestments.data?.map((item) => [item.id, item.marketValue]) ?? [],
   );
 
   const parsed = currentInvestments.data?.map((item) => {
     const previous = previousByCategory.get(item.id);
     const percentage = previous
-      ? Math.round((((item.totalValue ?? 0) - previous) / previous) * 100)
+      ? Math.round((((item.marketValue ?? 0) - previous) / previous) * 100)
       : 0;
 
     return {
@@ -48,7 +48,7 @@ function useGetInvestmentsBreakdown() {
       tag: <TagComponent name={item.name} color={item.color} />,
       value: (
         <div className="ml-auto flex w-min justify-end gap-1 [&>*]:text-right">
-          <span className="w-20">{item.totalValue ?? 0}€</span>
+          <span className="w-20">{item.marketValue ?? 0}€</span>
           <div className="flex w-20 items-center">
             <PercentageArrow
               percentage={percentage}

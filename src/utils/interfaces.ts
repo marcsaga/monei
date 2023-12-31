@@ -2,9 +2,9 @@ export interface Investment {
   id: string;
   date?: string;
   contribution?: number;
-  accumulated?: number;
-  totalValue?: number;
   category?: Category;
+  marketValue?: number;
+  previousMarketValue?: number;
 }
 
 export interface Expense {

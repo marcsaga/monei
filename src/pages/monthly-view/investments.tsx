@@ -22,9 +22,7 @@ export default function IncomesMonthly() {
         previousTotal={invested.previousTotal}
       />
       <span />
-      <div className="col-span-2">
-        <InvestmentTable filters={filters} />
-      </div>
+      <InvestmentTable filters={filters} />
     </MonthlyLayout>
   );
 }

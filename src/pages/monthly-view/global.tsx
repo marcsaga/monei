@@ -13,7 +13,8 @@ import { api } from "~/utils/api";
 export default function GlobalMonthly() {
   const { filters } = useMonthlyFilters();
   const { currentTotal, previousTotal } = useMonthlyExpenseTotals();
-  const { currentInvested, previousInvested } = useGetInvestedTotalValue();
+  const { currentMarketValue, previousMarketValue } =
+    useGetInvestedMarketValue();
 
   return (
     <MonthlyLayout equalColumns>
@@ -26,8 +27,8 @@ export default function GlobalMonthly() {
       <TotalCard
         title={getMonthName(filters.start)}
         description="Total value"
-        total={currentInvested}
-        previousTotal={previousInvested}
+        total={currentMarketValue}
+        previousTotal={previousMarketValue}
       />
       <GlobalExpensesList />
       <GlobalInvestmentsList />
@@ -35,7 +36,7 @@ export default function GlobalMonthly() {
   );
 }
 
-function useGetInvestedTotalValue() {
+function useGetInvestedMarketValue() {
   const { filters: current } = useMonthlyFilters();
   const previous = getFullPreviousMonthDates(current.start);
   const currentInvestments =
@@ -49,11 +50,11 @@ function useGetInvestedTotalValue() {
       end: previous.end,
     });
 
-  const calculate = (acc: number, { totalValue }: { totalValue?: number }) =>
-    acc + (totalValue ?? 0);
+  const calculate = (acc: number, { marketValue }: { marketValue?: number }) =>
+    acc + (marketValue ?? 0);
   return {
-    currentInvested: currentInvestments.data?.reduce(calculate, 0) ?? 0,
-    previousInvested: previousInvestments.data?.reduce(calculate, 0) ?? 0,
+    currentMarketValue: currentInvestments.data?.reduce(calculate, 0) ?? 0,
+    previousMarketValue: previousInvestments.data?.reduce(calculate, 0) ?? 0,
   };
 }
 
