@@ -85,12 +85,20 @@ export function InvestmentTable({ filters }: InvestmentTableProps) {
       );
     }
 
+    let marketValueUpdate: { marketValue?: number } = {};
+    if (columnId === "contribution" && !investment.marketValue) {
+      marketValueUpdate = {
+        marketValue: (value as number) + (investment.previousMarketValue ?? 0),
+      };
+    }
+
     if (investment[columnId] === updateValue) {
       return;
     }
     updateInvestment.mutate({
       id: investment.id,
       [columnId === "category" ? "categoryId" : columnId]: updateValue,
+      ...marketValueUpdate,
     });
   }
 

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState, type JSX } from "react";
+import React, { useState, type JSX, useEffect } from "react";
 import { type CellContext } from "@tanstack/react-table";
 
 export function getInputEditableCell<T extends object>(
@@ -14,6 +14,11 @@ export function getInputEditableCell<T extends object>(
       type === "number" && !Number.isNaN(value) ? Number(value) : value;
     table.options.meta?.updateData(index, id, sendValue);
   };
+
+  useEffect(() => {
+    if (initialValue !== value) setValue(initialValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValue]);
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (type === "number") {

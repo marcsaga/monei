@@ -51,7 +51,7 @@ export const investmentRouter = createTRPCRouter({
           .map(({ categoryId }) => categoryId),
       );
 
-      let previousByCategory = new Map<string, number>();
+      let previousByCategory = new Map<string, number | null>();
       if (input.start && categoryIDs.size > 0) {
         const dtos = await ctx.db.$queryRaw<InvestmentPreviousValue[]>`
         SELECT "id", (SELECT market_value FROM "investment" 
@@ -66,7 +66,7 @@ export const investmentRouter = createTRPCRouter({
         GROUP BY "id"
       `;
         previousByCategory = new Map(
-          dtos.map(({ id, market_value }) => [id, market_value ?? 0]),
+          dtos.map(({ id, market_value }) => [id, market_value]),
         );
       }
 
