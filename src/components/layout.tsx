@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowFilter } from "./arrow-filter";
-import { getMonthName } from "~/utils/date-formatters";
+import { getMonthName } from "~/utils/formatters/date";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationMenu } from "./navigation-menu";

@@ -5,7 +5,7 @@ import {
   getFullNextMonthDates,
   getFullPreviousMonthDates,
   getMonthName,
-} from "~/utils/date-formatters";
+} from "~/utils/formatters/date";
 import { TotalCard } from "~/components/cards/totals";
 import { type Expense } from "~/utils/interfaces";
 import { PieChartCard } from "~/components/cards/pie-chart";

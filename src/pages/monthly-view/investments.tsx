@@ -3,7 +3,7 @@ import { MonthlyLayout } from "~/components/layout";
 import {
   getFullPreviousMonthDates,
   getMonthName,
-} from "~/utils/date-formatters";
+} from "~/utils/formatters/date";
 import { InvestmentTable } from "~/components/table/shared/investment-table";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { useListInvestments } from "~/hooks/api/investments";

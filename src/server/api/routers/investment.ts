@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { type CategoryColor, type Investment } from "~/utils/interfaces";
-import { dayFromDate } from "~/utils/date-formatters";
+import { dayFromDate } from "~/utils/formatters/date";
 import { Prisma } from "@prisma/client";
 
 type DateFilter = {

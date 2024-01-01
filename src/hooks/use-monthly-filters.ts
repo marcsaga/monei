@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { dayFromDate, getFullMonthDates } from "~/utils/date-formatters";
+import { dayFromDate, getFullMonthDates } from "~/utils/formatters/date";
 
 const initialFilters = {
   date: getFullMonthDates(dayFromDate(new Date())).start,

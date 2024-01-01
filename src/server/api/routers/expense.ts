@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { dayFromDate } from "~/utils/date-formatters";
+import { dayFromDate } from "~/utils/formatters/date";
 import { type CategoryColor, type Expense } from "~/utils/interfaces";
 
 export const expenseRouter = createTRPCRouter({
