@@ -8,38 +8,77 @@ import { InvestmentTable } from "~/components/table/shared/investment-table";
 import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { useListInvestments } from "~/hooks/api/investments";
 import { type Investment } from "~/utils/interfaces";
+import { PieChartCard } from "~/components/cards/pie-chart";
 
 export default function IncomesMonthly() {
   const { filters } = useMonthlyFilters();
-  const invested = useMonthlyInvestedTotals();
+  const contributions = useMonthlyContributions();
+  const marketValue = useMonthlyMarketValue();
+  const pieChartData = usePieChartData();
 
   return (
     <MonthlyLayout>
       <TotalCard
         title={getMonthName(filters.start)}
         description="Total contributions"
-        total={invested.currentTotal}
-        previousTotal={invested.previousTotal}
+        total={contributions.current}
+        previousTotal={contributions.previous}
+        mode="investment"
       />
-      <span />
+      <TotalCard
+        title={getMonthName(filters.start)}
+        description="Market value"
+        total={marketValue.current}
+        previousTotal={marketValue.previous}
+        mode="investment"
+      />
       <InvestmentTable filters={filters} />
+      <PieChartCard title="Market value breakdown" data={pieChartData} />
     </MonthlyLayout>
   );
 }
 
-function useMonthlyInvestedTotals() {
+function useMonthlyContributions() {
   const current = useMonthlyFilters().filters;
   const previous = getFullPreviousMonthDates(current.start);
 
-  const currentMonthExpense = useListInvestments(current);
-  const previousMonthExpense = useListInvestments(previous);
+  const currentInvestments = useListInvestments(current);
+  const previousInvestments = useListInvestments(previous);
 
   const calculate = (acc: number, expense: Investment) =>
     acc + (expense.contribution ?? 0);
   return {
-    currentTotal: currentMonthExpense.data?.reduce(calculate, 0) ?? 0,
-    previousTotal: previousMonthExpense.data?.reduce(calculate, 0) ?? 0,
+    current: currentInvestments.data?.reduce(calculate, 0) ?? 0,
+    previous: previousInvestments.data?.reduce(calculate, 0) ?? 0,
   };
+}
+
+function useMonthlyMarketValue() {
+  const current = useMonthlyFilters().filters;
+  const previous = getFullPreviousMonthDates(current.start);
+
+  const currentInvestments = useListInvestments(current);
+  const previousInvestments = useListInvestments(previous);
+
+  const calculate = (acc: number, expense: Investment) =>
+    acc + (expense.marketValue ?? 0);
+  return {
+    current: currentInvestments.data?.reduce(calculate, 0) ?? 0,
+    previous: previousInvestments.data?.reduce(calculate, 0) ?? 0,
+  };
+}
+
+function usePieChartData() {
+  const current = useMonthlyFilters().filters;
+  const { data } = useListInvestments(current);
+
+  if (!data) return [];
+
+  return data.map((investment) => ({
+    id: investment.id,
+    category: investment.category,
+    amount: investment.marketValue,
+  }));
 }
 
 IncomesMonthly.auth = true;

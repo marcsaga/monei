@@ -6,6 +6,7 @@ interface TotalCardProps {
   description: string;
   previousTotal: number;
   className?: string;
+  mode?: "investment" | "expense";
 }
 
 export const TotalCard = ({
@@ -13,6 +14,7 @@ export const TotalCard = ({
   description,
   total,
   previousTotal,
+  mode = "expense",
   className = "",
 }: TotalCardProps) => {
   const historicPercentage =
@@ -31,7 +33,11 @@ export const TotalCard = ({
         {total.toFixed(2)}€
       </span>
       <span className="uppercase text-gray-400">{title}</span>
-      <PercentageArrow percentage={historicPercentage} className="ml-auto" />
+      <PercentageArrow
+        percentage={historicPercentage}
+        mode={mode}
+        className="ml-auto"
+      />
     </div>
   );
 };
