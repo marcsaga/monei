@@ -1,3 +1,4 @@
+import { useLocaleNumberFormatter } from "~/utils/formatters/number";
 import { PercentageArrow } from "../percentage-arrow";
 
 interface TotalCardProps {
@@ -17,6 +18,7 @@ export const TotalCard = ({
   mode = "expense",
   className = "",
 }: TotalCardProps) => {
+  const { formatCurrency } = useLocaleNumberFormatter();
   const historicPercentage =
     previousTotal > 0
       ? Math.round(((total - previousTotal) / previousTotal) * 10000) / 100
@@ -30,7 +32,7 @@ export const TotalCard = ({
         {description}
       </span>
       <span className="ml-auto self-center text-3xl font-semibold text-gray-900">
-        {total.toFixed(2)}€
+        {formatCurrency(total)}
       </span>
       <span className="uppercase text-gray-400">{title}</span>
       <PercentageArrow

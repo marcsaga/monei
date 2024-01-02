@@ -3,6 +3,7 @@ import _ from "lodash";
 import { animated } from "@react-spring/web";
 import { type Category } from "~/utils/interfaces";
 import { TagComponent, hexColorDict } from "./tag";
+import { useLocaleNumberFormatter } from "~/utils/formatters/number";
 
 export interface PieData {
   id: string;
@@ -15,6 +16,7 @@ interface PieChartProps<T> {
 }
 
 export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
+  const { formatCurrency } = useLocaleNumberFormatter();
   const groupedData = _.groupBy(data, "category.id");
   const total = data.reduce((acc, curr) => acc + (curr.amount ?? 0), 0);
   const pieData = Object.entries(groupedData)
@@ -47,7 +49,7 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
       sortByValue
       arcLinkLabelsSkipAngle={12}
       arcLabelsSkipAngle={12}
-      arcLabel={(e) => `${e.value}€`}
+      arcLabel={({ value }) => formatCurrency(value)}
       arcLinkLabel={(e) => e.data.label}
       animate={false}
       activeOuterRadiusOffset={4}
@@ -67,7 +69,7 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
               transform={d.style.textPosition}
               textAnchor={d.style.textAnchor}
               dominantBaseline="central"
-              className="text-xs tracking-tight "
+              className="text-xs tracking-tight"
             >
               {d.label}
             </animated.text>
@@ -79,7 +81,7 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
           transform={style.transform}
           textAnchor="middle"
           dominantBaseline="central"
-          className="pointer-events-none text-xs font-medium"
+          className="pointer-events-none text-[11px] font-medium"
         >
           {label}
         </animated.text>
@@ -88,7 +90,9 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
         return (
           <div className="card flex items-center gap-1 p-2">
             <TagComponent name={datum.data.label} color={datum.data.color} />
-            <span className="ml-2 text-sm font-semibold">{datum.value}€</span>
+            <span className="ml-2 text-sm font-semibold">
+              {formatCurrency(datum.value)}
+            </span>
             <span className="text-sm text-gray-500">
               ({datum.data.percentage}%)
             </span>

@@ -4,6 +4,7 @@ import { List } from "../list";
 import { TagComponent } from "../../tag";
 import { getFullPreviousMonthDates } from "~/utils/formatters/date";
 import { PercentageArrow } from "../../percentage-arrow";
+import { useLocaleNumberFormatter } from "~/utils/formatters/number";
 
 export const GlobalInvestmentsList = () => {
   const data = useGetInvestmentsBreakdown();
@@ -21,6 +22,7 @@ export const GlobalInvestmentsList = () => {
 };
 
 function useGetInvestmentsBreakdown() {
+  const { formatCurrency } = useLocaleNumberFormatter();
   const { filters: current } = useMonthlyFilters();
   const previous = getFullPreviousMonthDates(current.start);
   const currentInvestments =
@@ -48,7 +50,7 @@ function useGetInvestmentsBreakdown() {
       tag: <TagComponent name={item.name} color={item.color} />,
       value: (
         <div className="ml-auto flex w-min justify-end gap-1 [&>*]:text-right">
-          <span className="w-20">{item.marketValue ?? 0}€</span>
+          <span className="w-20">{formatCurrency(item.marketValue ?? 0)}</span>
           <div className="flex w-20 items-center">
             <PercentageArrow
               percentage={percentage}
