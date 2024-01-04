@@ -24,14 +24,14 @@ export default function MonthlyExpenses() {
   return (
     <MonthlyLayout>
       <TotalCard
-        title={getMonthName(filters.start)}
-        description="Total expenses"
+        title="Total expenses"
+        subtitle={getMonthName(filters.start)}
         total={currentTotal}
         previousTotal={previousTotal}
       />
       <TotalCard
-        title={mostSpentCategory?.categoryName ?? ""}
-        description="Most spent"
+        title="Most spent"
+        subtitle={mostSpentCategory?.categoryName ?? ""}
         total={mostSpentCategory?.current ?? 0}
         previousTotal={mostSpentCategory?.previous ?? 0}
       />

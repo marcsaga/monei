@@ -19,15 +19,15 @@ export default function IncomesMonthly() {
   return (
     <MonthlyLayout>
       <TotalCard
-        title={getMonthName(filters.start)}
-        description="Total contributions"
+        title="Total contributions"
+        subtitle={getMonthName(filters.start)}
         total={contributions.current}
         previousTotal={contributions.previous}
         mode="investment"
       />
       <TotalCard
-        title={getMonthName(filters.start)}
-        description="Market value"
+        title="Market value"
+        subtitle={getMonthName(filters.start)}
         total={marketValue.current}
         previousTotal={marketValue.previous}
         mode="investment"

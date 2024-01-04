@@ -4,7 +4,7 @@ import { PercentageArrow } from "../percentage-arrow";
 interface TotalCardProps {
   total: number;
   title: string;
-  description: string;
+  subtitle: string;
   previousTotal: number;
   className?: string;
   mode?: "investment" | "expense";
@@ -12,7 +12,7 @@ interface TotalCardProps {
 
 export const TotalCard = ({
   title,
-  description,
+  subtitle,
   total,
   previousTotal,
   mode = "expense",
@@ -29,13 +29,13 @@ export const TotalCard = ({
       className={`card grid w-full grid-cols-[1fr_auto] items-center justify-between gap-1 ${className}`}
     >
       <span className="text-main-dark text-xl font-semibold uppercase">
-        {description}
+        {title}
       </span>
       <span className="text-main-dark ml-auto self-center text-3xl font-semibold">
         {formatCurrency(total)}
       </span>
       <span className="text-main-dark font-medium uppercase text-opacity-50">
-        {title}
+        {subtitle}
       </span>
       <PercentageArrow
         percentage={historicPercentage}

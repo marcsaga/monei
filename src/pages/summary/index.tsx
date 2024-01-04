@@ -10,14 +10,14 @@ export default function Summary() {
           </div>
           <div className="flex flex-col gap-4">
             <TotalCard
-              title=""
-              description="Total expenses"
+              title="Total expenses"
+              subtitle=""
               total={0}
               previousTotal={0}
             />
             <TotalCard
-              title=""
-              description="Total incomes"
+              title="Total incomes"
+              subtitle=""
               total={0}
               previousTotal={0}
             />
