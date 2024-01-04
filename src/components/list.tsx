@@ -1,3 +1,5 @@
+import { PercentageArrow } from "./percentage-arrow";
+
 interface ListData {
   id: string;
 }
@@ -37,3 +39,24 @@ export function List<T extends ListData>({ title, data }: ListProps<T>) {
     </div>
   );
 }
+
+interface ListValue {
+  value: string;
+  percentage: number;
+  isInvestment?: boolean;
+}
+
+export const ListValue = ({ value, percentage, isInvestment }: ListValue) => {
+  return (
+    <div className="ml-auto flex w-min justify-end gap-1 [&>*]:text-right">
+      <span className="text-main-dark w-20">{value}</span>
+      <div className="flex w-20 items-center">
+        <PercentageArrow
+          percentage={percentage}
+          className="ml-auto"
+          mode={isInvestment ? "investment" : undefined}
+        />
+      </div>
+    </div>
+  );
+};
