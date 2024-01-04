@@ -8,12 +8,10 @@ import { DEFAULT_PATH } from "~/utils/constants";
 
 const Navbar = () => {
   return (
-    <div className="w-full bg-[hsl(53,100%,70%)]/20 px-12">
+    <div className="bg-main-primary w-full px-12">
       <div className="mx-auto grid h-max w-full grid-cols-[1fr_2fr_1fr] items-center justify-between gap-8 py-4 lg:max-w-7xl">
         <Link href={DEFAULT_PATH}>
-          <span className="text-5xl font-bold text-[hsl(53,100%,70%)]">
-            Monei
-          </span>
+          <span className="text-main-light text-5xl font-bold">Monei</span>
         </Link>
         <NavigationMenu
           className="mx-auto max-w-none text-lg [&_ul]:gap-20"
@@ -54,7 +52,7 @@ export const MonthlyLayout = ({
   const { filters, handleOnMonthChange } = useMonthlyFilters();
 
   return (
-    <div className="grid h-full grid-rows-[auto_1fr] overflow-hidden pt-4">
+    <div className="bg-main-light grid h-full grid-rows-[auto_1fr] overflow-hidden pt-4">
       <div className="relative z-10 mx-auto flex w-full items-center justify-between border-b border-gray-300 py-5 shadow-sm lg:max-w-7xl">
         <NavigationMenu
           items={[

@@ -9,14 +9,7 @@ import { useLocaleNumberFormatter } from "~/utils/formatters/number";
 export const GlobalExpensesList = () => {
   const data = useGetExpensesByCategory();
 
-  return (
-    <div className="flex flex-col gap-4">
-      <h4 className="text-md font-semibold uppercase text-gray-600">
-        Expenses breakdown
-      </h4>
-      <List data={data ?? []} />
-    </div>
-  );
+  return <List title="Expenses breakdown" data={data ?? []} />;
 };
 
 function useGetExpensesByCategory() {
@@ -47,7 +40,9 @@ function useGetExpensesByCategory() {
       tag: <TagComponent name={item.name} color={item.color} />,
       value: (
         <div className="ml-auto flex w-min justify-end gap-1 [&>*]:text-right">
-          <span className="w-20">{formatCurrency(item.amount)}</span>
+          <span className="text-main-dark w-20">
+            {formatCurrency(item.amount)}
+          </span>
           <div className="flex w-20 items-center">
             <PercentageArrow percentage={percentage} className="ml-auto" />
           </div>

@@ -53,7 +53,7 @@ const colorMap: Record<CategoryColor | "no-category", string> = {
 export const TagComponent = ({ name, color, onClose }: TagComponentProps) => {
   return (
     <span
-      className={`flex w-min items-center gap-1 whitespace-nowrap rounded-sm px-1 py-[2px] text-xs font-semibold text-gray-500 ${
+      className={`text-main-dark flex w-min items-center gap-1 whitespace-nowrap rounded-sm px-1 py-[2px] text-xs font-semibold text-opacity-80 ${
         colorMap[color ?? "no-category"]
       }`}
     >

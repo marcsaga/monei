@@ -18,7 +18,7 @@ export const ConfigurationModal = ({}) => {
 
   return (
     <Dialog open={openModal} onOpenChange={handleClose}>
-      <DialogContent className="min-h-[80%] max-w-screen-md overflow-auto py-10">
+      <DialogContent className="min-h-[80%] max-w-screen-md overflow-auto py-8">
         <InvestmentsSection />
       </DialogContent>
     </Dialog>

@@ -9,16 +9,7 @@ import { useLocaleNumberFormatter } from "~/utils/formatters/number";
 export const GlobalInvestmentsList = () => {
   const data = useGetInvestmentsBreakdown();
 
-  return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h4 className="text-md font-semibold uppercase text-gray-600">
-          Investments breakdown (by value)
-        </h4>
-      </div>
-      <List data={data ?? []} />
-    </div>
-  );
+  return <List title="Investments breakdown (by value)" data={data ?? []} />;
 };
 
 function useGetInvestmentsBreakdown() {
@@ -50,7 +41,9 @@ function useGetInvestmentsBreakdown() {
       tag: <TagComponent name={item.name} color={item.color} />,
       value: (
         <div className="ml-auto flex w-min justify-end gap-1 [&>*]:text-right">
-          <span className="w-20">{formatCurrency(item.marketValue ?? 0)}</span>
+          <span className="text-main-dark w-20">
+            {formatCurrency(item.marketValue ?? 0)}
+          </span>
           <div className="flex w-20 items-center">
             <PercentageArrow
               percentage={percentage}

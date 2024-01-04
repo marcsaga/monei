@@ -28,13 +28,15 @@ export const TotalCard = ({
     <div
       className={`card grid w-full grid-cols-[1fr_auto] items-center justify-between gap-1 ${className}`}
     >
-      <span className="text-xl font-semibold uppercase text-gray-600">
+      <span className="text-main-dark text-xl font-semibold uppercase">
         {description}
       </span>
-      <span className="ml-auto self-center text-3xl font-semibold text-gray-900">
+      <span className="text-main-dark ml-auto self-center text-3xl font-semibold">
         {formatCurrency(total)}
       </span>
-      <span className="uppercase text-gray-400">{title}</span>
+      <span className="text-main-dark font-medium uppercase text-opacity-50">
+        {title}
+      </span>
       <PercentageArrow
         percentage={historicPercentage}
         mode={mode}

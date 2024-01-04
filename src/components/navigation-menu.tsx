@@ -41,7 +41,9 @@ const MenuLink = ({ href, children, linkBase }: MenuLinkProps) => {
     <Link href={href}>
       <NavigationMenuLink
         className={`${
-          router.pathname.includes(linkBase) ? "text-black" : "text-gray-300"
+          router.pathname.includes(linkBase)
+            ? "text-main-dark"
+            : "text-main-dark text-opacity-20"
         } font-medium transition-colors`}
       >
         {children}

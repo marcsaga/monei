@@ -9,17 +9,17 @@ export const ArrowFilter = ({
 }: ArrowFilterProps) => {
   return (
     <div className="flex w-min items-center justify-between gap-2">
-      <span className="mr-4 font-semibold uppercase text-gray-600">
+      <span className="text-main-dark mr-4 font-semibold uppercase">
         {currentFilter}
       </span>
       <button
-        className="rounded border border-slate-300 p-3"
+        className="bg-main-secondary rounded border border-gray-200 p-3"
         onClick={() => onArrowClick(-1)}
       >
         <ArrowLeft />
       </button>
       <button
-        className="rounded border border-slate-300 p-3"
+        className="bg-main-secondary rounded border border-gray-200 p-3"
         onClick={() => onArrowClick(1)}
       >
         <ArrowRight />

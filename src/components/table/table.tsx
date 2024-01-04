@@ -141,7 +141,7 @@ export function Table<T extends Partial<BaseRow>>({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr
               key={headerGroup.id}
-              className="h-10 bg-gray-200 [&>:first-child]:rounded-tl [&>:last-child]:rounded-tr"
+              className="bg-main-gray h-10 [&>:first-child]:rounded-tl [&>:last-child]:rounded-tr"
             >
               <th className="group" tabIndex={0}>
                 <Checkbox
@@ -171,7 +171,7 @@ export function Table<T extends Partial<BaseRow>>({
           {table.getRowModel().rows.map((row) => {
             const selectedRow = row.getIsSelected();
             const rowColor = selectedRow
-              ? "bg-[hsl(53,100%,70%)]/10"
+              ? "bg-main-secondary"
               : "hover:bg-gray-50";
             return (
               <tr

@@ -19,7 +19,7 @@ export const Checkbox = ({
       >
         <input
           type="checkbox"
-          className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-gray-300 transition-all before:absolute before:left-2/4 before:top-2/4 before:block before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:rounded-full before:bg-gray-300 before:opacity-0 before:transition-opacity checked:border-yellow-300 checked:bg-yellow-300 checked:before:bg-yellow-300"
+          className="before:content[''] checked:border-main-primary checked:bg-main-primary checked:before:bg-main-primary peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-gray-300 transition-all before:absolute before:left-2/4 before:top-2/4 before:block before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:rounded-full before:bg-gray-300 before:opacity-0 before:transition-opacity"
           id="yellow"
           checked={checked}
           onChange={(event) => onChange?.(event.target.checked)}
