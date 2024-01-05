@@ -19,6 +19,14 @@ body {
     padding: theme(spacing[3]) theme(spacing[4]);
     overflow: visible;
   }
+
+  .layout-max-width {
+    @apply lg:max-w-7xl;
+  }
+
+  .layout-x-padding {
+    @apply px-4 md:px-8 lg:px-12;
+  }
 }
 
 @layer base {

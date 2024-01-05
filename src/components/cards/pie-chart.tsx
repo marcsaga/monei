@@ -10,7 +10,7 @@ export function PieChartCard<T extends PieData>({
   data,
 }: PieChartCardProps<T>) {
   return (
-    <div className="card grid h-min gap-4 pt-[18px] [&_svg]:overflow-visible">
+    <div className="card grid h-min gap-4 pt-[18px] [&>*:last-child]:justify-self-center [&_svg]:overflow-visible">
       <span className="text-main-dark text-xl font-semibold uppercase">
         {title ?? "By category"}
       </span>
