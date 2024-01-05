@@ -5,13 +5,17 @@ import { useMonthlyFilters } from "~/hooks/use-monthly-filters";
 import { UserDropdown } from "./user-dropdown";
 import { NavigationMenu } from "./navigation-menu";
 import { DEFAULT_PATH } from "~/utils/constants";
+import { useIsMobile } from "~/hooks/use-is-mobile";
 
 const Navbar = () => {
+  const isMobile = useIsMobile();
   return (
     <div className="bg-main-primary layout-x-padding w-full">
       <div className="layout-max-width mx-auto grid h-max w-full grid-cols-[1fr_3fr_1fr] items-center justify-between gap-8 py-4">
         <Link href={DEFAULT_PATH}>
-          <span className="text-main-light text-5xl font-bold">Monei</span>
+          <span className="text-main-light text-5xl font-bold">
+            {isMobile ? "M.io" : "Monei.io"}
+          </span>
         </Link>
         <NavigationMenu
           className="mx-auto max-w-none text-lg [&_ul]:gap-4 md:[&_ul]:gap-20"
@@ -54,7 +58,7 @@ export const MonthlyLayout = ({
   return (
     <div className="bg-main-light grid grid-rows-[auto_1fr] overflow-hidden pt-4">
       <div className="layout-x-padding">
-        <div className="layout-max-width relative z-10 mx-auto flex w-full items-center justify-between border-b border-gray-300 py-5 shadow-sm">
+        <div className="layout-max-width relative z-10 mx-auto flex w-full flex-col justify-between gap-y-2 border-b border-gray-300 py-5 shadow-sm md:flex-row md:items-center">
           <NavigationMenu
             items={[
               { name: "Global", linkBase: `${base}/global` },
@@ -63,6 +67,7 @@ export const MonthlyLayout = ({
             ]}
           />
           <ArrowFilter
+            className="self-end"
             currentFilter={getMonthName(filters.start)}
             onArrowClick={handleOnMonthChange}
           />

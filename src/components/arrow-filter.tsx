@@ -1,14 +1,18 @@
 interface ArrowFilterProps {
+  className?: string;
   currentFilter: string;
   onArrowClick: (direction: -1 | 1) => void;
 }
 
 export const ArrowFilter = ({
+  className,
   currentFilter,
   onArrowClick,
 }: ArrowFilterProps) => {
   return (
-    <div className="flex w-min items-center justify-between gap-2">
+    <div
+      className={`flex w-min items-center justify-between gap-2 ${className}`}
+    >
       <span className="text-main-dark mr-4 font-semibold uppercase">
         {currentFilter}
       </span>

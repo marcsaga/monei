@@ -44,7 +44,7 @@ const MenuLink = ({ href, children, linkBase }: MenuLinkProps) => {
           router.pathname.includes(linkBase)
             ? "text-main-dark"
             : "text-main-dark text-opacity-20"
-        } font-medium transition-colors`}
+        } whitespace-nowrap font-medium transition-colors`}
       >
         {children}
       </NavigationMenuLink>

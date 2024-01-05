@@ -4,6 +4,7 @@ import { animated } from "@react-spring/web";
 import { type Category } from "~/utils/interfaces";
 import { TagComponent, hexColorDict } from "./tag";
 import { useLocaleNumberFormatter } from "~/utils/formatters/number";
+import { useIsMobile } from "~/hooks/use-is-mobile";
 
 export interface PieData {
   id: string;
@@ -16,6 +17,7 @@ interface PieChartProps<T> {
 }
 
 export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
+  const isMobile = useIsMobile();
   const { formatCurrency } = useLocaleNumberFormatter();
   const groupedData = _.groupBy(data, "category.id");
   const total = data.reduce((acc, curr) => acc + (curr.amount ?? 0), 0);
@@ -38,8 +40,8 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
   return (
     <Pie
       data={pieData}
-      width={425}
-      height={400}
+      width={isMobile ? 325 : 425}
+      height={isMobile ? 300 : 400}
       margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
       innerRadius={0.5}
       cornerRadius={2}
