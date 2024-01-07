@@ -145,10 +145,10 @@ export const investmentRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const dtos = await ctx.db.$queryRaw<GroupedInvestmentDTO[]>`
         SELECT "id","name","color", (SELECT market_value FROM "investment" 
-                                    WHERE "category_id" = "category"."id" and "date" <= ${new Date(
+                                    WHERE "category_id" = "category"."id" and ("date" <= ${new Date(
                                       input.end,
-                                    )} 
-                                    ORDER BY "date" DESC LIMIT 1) as market_value
+                                    )} OR date is null) 
+                                    ORDER BY "date" DESC NULLS LAST LIMIT 1) as market_value
         FROM "category"
         WHERE "user_id" = ${ctx.session.user.id} 
         AND "type" = 'INVESTMENT'
