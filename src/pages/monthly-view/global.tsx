@@ -22,18 +22,22 @@ export default function GlobalMonthly() {
 
   return (
     <MonthlyLayout equalColumns>
-      <TotalCard
-        title="Total expenses"
-        subtitle={getMonthName(filters.start)}
-        total={currentTotal}
-        previousTotal={previousTotal}
-      />
-      <TotalCard
-        title="Total value"
-        subtitle={getMonthName(filters.start)}
-        total={currentMarketValue}
-        previousTotal={previousMarketValue}
-      />
+      <div>
+        <TotalCard
+          title="Total expenses"
+          subtitle={getMonthName(filters.start)}
+          total={currentTotal}
+          previousTotal={previousTotal}
+        />
+      </div>
+      <div>
+        <TotalCard
+          title="Total value"
+          subtitle={getMonthName(filters.start)}
+          total={currentMarketValue}
+          previousTotal={previousMarketValue}
+        />
+      </div>
       <List title="Expenses breakdown" data={expensesListData} />
       <List
         title="Investments breakdown (by value)"

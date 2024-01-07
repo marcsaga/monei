@@ -1,4 +1,4 @@
-import { Pie } from "@nivo/pie";
+import { ResponsivePie } from "@nivo/pie";
 import _ from "lodash";
 import { animated } from "@react-spring/web";
 import { type Category } from "~/utils/interfaces";
@@ -38,11 +38,8 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
     .filter((e) => e.value > 0);
 
   return (
-    <Pie
+    <ResponsivePie
       data={pieData}
-      width={isMobile ? 325 : 425}
-      height={isMobile ? 300 : 400}
-      margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
       innerRadius={0.5}
       cornerRadius={2}
       colors={({ data }) => hexColorDict[data.color ?? "no-category"]}
@@ -56,6 +53,7 @@ export function PieChart<T extends PieData>({ data }: PieChartProps<T>) {
       animate={false}
       activeOuterRadiusOffset={4}
       activeInnerRadiusOffset={4}
+      enableArcLinkLabels={!isMobile}
       arcLinkLabelsThickness={1.5}
       arcLinkLabelComponent={(d) => {
         return (

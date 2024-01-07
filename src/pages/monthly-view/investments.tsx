@@ -18,22 +18,32 @@ export default function IncomesMonthly() {
 
   return (
     <MonthlyLayout>
-      <TotalCard
-        title="Total contributions"
-        subtitle={getMonthName(filters.start)}
-        total={contributions.current}
-        previousTotal={contributions.previous}
-        mode="investment"
-      />
-      <TotalCard
-        title="Market value"
-        subtitle={getMonthName(filters.start)}
-        total={marketValue.current}
-        previousTotal={marketValue.previous}
-        mode="investment"
-      />
-      <InvestmentTable filters={filters} />
-      <PieChartCard title="Market value breakdown" data={pieChartData} />
+      <div>
+        <TotalCard
+          title="Total contributions"
+          subtitle={getMonthName(filters.start)}
+          total={contributions.current}
+          previousTotal={contributions.previous}
+          mode="investment"
+        />
+      </div>
+      <div>
+        <TotalCard
+          title="Market value"
+          subtitle={getMonthName(filters.start)}
+          total={marketValue.current}
+          previousTotal={marketValue.previous}
+          mode="investment"
+        />
+      </div>
+      <div className="overflow-x-auto">
+        <div className="inline-block">
+          <InvestmentTable filters={filters} />
+        </div>
+      </div>
+      <div>
+        <PieChartCard title="Market value breakdown" data={pieChartData} />
+      </div>
     </MonthlyLayout>
   );
 }

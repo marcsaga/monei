@@ -14,6 +14,7 @@ import {
   useListInvestments,
   useUpdateInvestment,
 } from "~/hooks/api/investments";
+import { useIsMobile } from "~/hooks/use-is-mobile";
 
 const columnHelper = createColumnHelper<Investment>();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +49,7 @@ interface InvestmentTableProps {
 }
 
 export function InvestmentTable({ filters }: InvestmentTableProps) {
+  const isMobile = useIsMobile();
   const listInvestments = useListInvestments(filters);
   const createInvestment = useCreateInvestment(filters);
   const updateInvestment = useUpdateInvestment(filters);
@@ -109,6 +111,9 @@ export function InvestmentTable({ filters }: InvestmentTableProps) {
   return (
     <Table
       id={`expenses-${filters.start}`}
+      colSizes={
+        isMobile ? ["w-[120px]", "w-[120px]", "w-[120px]", "w-[120px]"] : []
+      }
       columns={columns}
       data={listInvestments.data ?? []}
       onAddRow={handleAddRow}

@@ -134,7 +134,7 @@ export function Table<T extends Partial<BaseRow>>({
       ) : null}
       <table className="w-full table-fixed rounded border-none bg-white shadow">
         <colgroup>
-          <col className="w-[56px]" />
+          <col className="w-[32px] md:w-[56px]" />
           {colSizes?.map((size, index) => <col key={index} className={size} />)}
         </colgroup>
         <thead>
@@ -148,7 +148,7 @@ export function Table<T extends Partial<BaseRow>>({
                   checked={isSomeRowSelected}
                   className={`${
                     !isSomeRowSelected ? "hidden" : ""
-                  } px-4 group-hover:flex`}
+                  } px-2 group-hover:flex md:px-4`}
                   onChange={() => table.toggleAllRowsSelected()}
                   icon={getMainCheckBoxTick()}
                 />
@@ -156,7 +156,7 @@ export function Table<T extends Partial<BaseRow>>({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600"
+                  className="px-2 text-left text-xs font-bold uppercase tracking-wider text-gray-600 md:px-4"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -184,13 +184,13 @@ export function Table<T extends Partial<BaseRow>>({
                     onChange={row.toggleSelected}
                     className={`${
                       !selectedRow ? "hidden" : ""
-                    } py-4 pl-4 group-hover:flex`}
+                    } py-4 pl-2 group-hover:flex md:pl-4`}
                   />
                 </td>
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="h-14 whitespace-nowrap p-0 [&>*]:px-4 [&>*]:text-sm [&>*]:font-medium [&>*]:text-gray-900"
+                    className="h-14 whitespace-nowrap p-0 [&>*]:px-2 [&>*]:text-sm [&>*]:font-medium [&>*]:text-gray-900 [&>*]:md:px-4"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

@@ -23,20 +23,30 @@ export default function MonthlyExpenses() {
 
   return (
     <MonthlyLayout>
-      <TotalCard
-        title="Total expenses"
-        subtitle={getMonthName(filters.start)}
-        total={currentTotal}
-        previousTotal={previousTotal}
-      />
-      <TotalCard
-        title="Most spent"
-        subtitle={mostSpentCategory?.categoryName ?? ""}
-        total={mostSpentCategory?.current ?? 0}
-        previousTotal={mostSpentCategory?.previous ?? 0}
-      />
-      <ExpenseTable filters={filters} />
-      <PieChartCard data={expensesList.data ?? []} />
+      <div>
+        <TotalCard
+          title="Total expenses"
+          subtitle={getMonthName(filters.start)}
+          total={currentTotal}
+          previousTotal={previousTotal}
+        />
+      </div>
+      <div>
+        <TotalCard
+          title="Most spent"
+          subtitle={mostSpentCategory?.categoryName ?? ""}
+          total={mostSpentCategory?.current ?? 0}
+          previousTotal={mostSpentCategory?.previous ?? 0}
+        />
+      </div>
+      <div className="overflow-x-auto">
+        <div className="inline-block">
+          <ExpenseTable filters={filters} />
+        </div>
+      </div>
+      <div>
+        <PieChartCard data={expensesList.data ?? []} />
+      </div>
     </MonthlyLayout>
   );
 }
