@@ -29,7 +29,7 @@ export const BottomSheet = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent>
+      <SheetContent side="bottom">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
