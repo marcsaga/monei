@@ -75,74 +75,25 @@ export function getCategoryInputCell<T extends object>(
 ): JSX.Element {
   const selectedCategory = getValue() as Category | undefined;
   const [activeCategory, setActiveCategory] = useState(selectedCategory);
-  const [newCategory, setNewCategory] = useState("");
   const [showSelector, setShowSelector] = useState(false);
 
-  const dropdownRootRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const { filters } = useMonthlyFilters();
-  const categories = useListCategories(type, { filterUsed: true });
-  const deleteCategory = useDeleteCategory(type, filters);
-  const generateTagColor = useGenerateTagColor(type);
-  useClickOutside(dropdownRootRef, () => setShowSelector(false));
-
-  function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setNewCategory(e.target.value);
-  }
-
-  function handleResetCategory() {
+  function handleRemoveCategory() {
     table.options.meta?.updateData(index, id, { type: "update", id: null });
     setActiveCategory(undefined);
   }
 
-  function handleSelectCategory(
-    event: React.BaseSyntheticEvent,
-    tagId: string,
-  ) {
-    event.stopPropagation();
-    const category = categories?.find((c) => c.id === tagId);
+  function handleSelectCategory(category: Category) {
     setActiveCategory(category);
-    table.options.meta?.updateData(index, id, { type: "update", id: tagId });
+    table.options.meta?.updateData(index, id, {
+      type: "update",
+      id: category.id,
+    });
     setShowSelector(false);
-  }
-
-  function handleOnDeleteCategory(event: React.BaseSyntheticEvent, id: string) {
-    event.stopPropagation();
-    deleteCategory.mutate({ id });
   }
 
   useEffect(() => {
     setActiveCategory(selectedCategory);
   }, [selectedCategory]);
-
-  useEffect(() => {
-    function onEnter(e: KeyboardEvent) {
-      if (inputRef.current?.contains(e.target as Node) && e.key === "Enter") {
-        e.preventDefault();
-        const newCategoryValue = newCategory.trim();
-        if (newCategoryValue) {
-          const category = {
-            name: newCategoryValue,
-            color: generateTagColor(),
-          };
-          table.options.meta?.updateData(index, id, {
-            type: "create",
-            ...category,
-          });
-          setActiveCategory({ ...category, id: "tmp-id" });
-        }
-        setNewCategory("");
-        setShowSelector(false);
-      }
-    }
-
-    addEventListener("keydown", onEnter);
-    return () => {
-      removeEventListener("keydown", onEnter);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputRef, newCategory]);
 
   return (
     <div
@@ -159,59 +110,144 @@ export function getCategoryInputCell<T extends object>(
         )}
       </div>
       {showSelector && (
-        <div
-          ref={dropdownRootRef}
-          className="absolute left-0 top-0 z-10 flex w-64 flex-col border-gray-100 bg-white shadow outline-none"
-        >
-          <div className="flex h-10 items-center border-b border-gray-100 bg-gray-200 px-4">
-            {activeCategory ? (
-              <TagComponent {...activeCategory} onClose={handleResetCategory} />
-            ) : (
-              (categories?.length ?? 0) < colors.length && (
-                <input
-                  ref={inputRef}
-                  className="h-full w-full bg-gray-200 outline-none"
-                  onChange={handleOnChange}
-                  value={newCategory}
-                />
-              )
-            )}
-          </div>
-          <span className="px-4 py-2 text-xs text-gray-500">
-            {getDropdownCopy(categories)}
-          </span>
-          <ul className="max-h-[154px] overflow-auto pb-2">
-            {categories?.map((tag) => (
-              <li
-                tabIndex={0}
-                key={tag.id}
-                className="flex cursor-pointer items-center justify-between px-4 py-1 hover:bg-gray-100"
-                onClick={(e) => handleSelectCategory(e, tag.id)}
-                onKeyDown={(e) =>
-                  e.key === "Enter"
-                    ? handleSelectCategory(e, tag.id)
-                    : undefined
-                }
-              >
-                <TagComponent {...tag} />
-                <button
-                  onClick={(evt) => handleOnDeleteCategory(evt, tag.id)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter"
-                      ? handleOnDeleteCategory(e, tag.id)
-                      : undefined
-                  }
-                >
-                  <CrossIcon className="h-3 w-3" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <CategorySelector
+          selectedCategory={activeCategory}
+          type={type}
+          onClose={() => setShowSelector(false)}
+          onCreateCategory={(category) => {
+            table.options.meta?.updateData(index, id, {
+              type: "create",
+              ...category,
+            });
+            setActiveCategory({ ...category, id: "tmp-id" });
+          }}
+          onRemoveCategory={handleRemoveCategory}
+          onSelectCategory={handleSelectCategory}
+        />
       )}
     </div>
   );
 }
+
+interface CategorySelectorProps {
+  selectedCategory?: Category;
+  type: CategoryType;
+  onClose: () => void;
+  onCreateCategory: (category: Omit<Category, "id">) => void;
+  onRemoveCategory: () => void;
+  onSelectCategory: (category: Category) => void;
+}
+
+const CategorySelector = ({
+  selectedCategory,
+  type,
+  onClose,
+  onCreateCategory,
+  onRemoveCategory,
+  onSelectCategory,
+}: CategorySelectorProps) => {
+  const { filters } = useMonthlyFilters();
+  const categories = useListCategories(type, { filterUsed: true });
+  const deleteCategory = useDeleteCategory(type, filters);
+  const dropdownRootRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [newCategory, setNewCategory] = useState("");
+
+  const generateTagColor = useGenerateTagColor(type);
+  useClickOutside(dropdownRootRef, () => onClose());
+
+  useEffect(() => {
+    function onEnter(e: KeyboardEvent) {
+      if (inputRef.current?.contains(e.target as Node) && e.key === "Enter") {
+        e.preventDefault();
+        const newCategoryValue = newCategory.trim();
+        if (newCategoryValue) {
+          const category = {
+            name: newCategoryValue,
+            color: generateTagColor(),
+          };
+          onCreateCategory(category);
+        }
+        setNewCategory("");
+        onClose();
+      }
+    }
+
+    addEventListener("keydown", onEnter);
+    return () => {
+      removeEventListener("keydown", onEnter);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputRef, newCategory]);
+
+  function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNewCategory(e.target.value);
+  }
+
+  function handleSelectCategory(
+    event: React.BaseSyntheticEvent,
+    tagId: string,
+  ) {
+    event.stopPropagation();
+    const category = categories?.find((c) => c.id === tagId);
+    if (category) onSelectCategory(category);
+  }
+
+  function handleOnDeleteCategory(event: React.BaseSyntheticEvent, id: string) {
+    event.stopPropagation();
+    deleteCategory.mutate({ id });
+  }
+
+  return (
+    <div
+      ref={dropdownRootRef}
+      className="absolute left-0 top-0 z-10 flex w-64 flex-col border-gray-100 bg-white shadow outline-none"
+    >
+      <div className="flex h-10 items-center border-b border-gray-100 bg-gray-200 px-4">
+        {selectedCategory ? (
+          <TagComponent {...selectedCategory} onClose={onRemoveCategory} />
+        ) : (
+          (categories?.length ?? 0) < colors.length && (
+            <input
+              ref={inputRef}
+              className="h-full w-full bg-gray-200 outline-none"
+              onChange={handleOnChange}
+              value={newCategory}
+            />
+          )
+        )}
+      </div>
+      <span className="px-4 py-2 text-xs text-gray-500">
+        {getDropdownCopy(categories)}
+      </span>
+      <ul className="max-h-[154px] overflow-auto pb-2">
+        {categories?.map((tag) => (
+          <li
+            tabIndex={0}
+            key={tag.id}
+            className="flex cursor-pointer items-center justify-between px-4 py-1 hover:bg-gray-100"
+            onClick={(e) => handleSelectCategory(e, tag.id)}
+            onKeyDown={(e) =>
+              e.key === "Enter" ? handleSelectCategory(e, tag.id) : undefined
+            }
+          >
+            <TagComponent {...tag} />
+            <button
+              onClick={(evt) => handleOnDeleteCategory(evt, tag.id)}
+              onKeyDown={(e) =>
+                e.key === "Enter"
+                  ? handleOnDeleteCategory(e, tag.id)
+                  : undefined
+              }
+            >
+              <CrossIcon className="h-3 w-3" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export function useGenerateTagColor(type: CategoryType) {
   const categories = useListCategories(type);
