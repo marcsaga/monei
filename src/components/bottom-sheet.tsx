@@ -1,22 +1,14 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "./ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 
 interface BottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  title: string;
-  description?: string;
+  title?: string;
 }
 
 export const BottomSheet = ({
   title,
-  description,
   children,
   onClose,
   isOpen,
@@ -29,11 +21,14 @@ export const BottomSheet = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent side="bottom">
-        <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
-          {description && <SheetDescription>{description}</SheetDescription>}
-        </SheetHeader>
+      <SheetContent side="bottom" className="p-0">
+        {title && (
+          <SheetHeader>
+            <SheetTitle className="py-2">
+              <h2 className="text-sm">{title}</h2>
+            </SheetTitle>
+          </SheetHeader>
+        )}
         {children}
       </SheetContent>
     </Sheet>

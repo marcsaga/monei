@@ -2,6 +2,7 @@
 import React, { useState, type JSX, useEffect, useCallback } from "react";
 import { type CellContext } from "@tanstack/react-table";
 import { TagComponent } from "../tag";
+import { BottomSheet } from "../bottom-sheet";
 import { useClickOutside } from "~/hooks/use-click-outside";
 import {
   type CategoryColor,
@@ -23,6 +24,7 @@ import {
   useListInvestments,
 } from "~/hooks/api/investments";
 import { useRouter } from "next/router";
+import { useIsMobile } from "~/hooks/use-is-mobile";
 
 function useListCategories(type: CategoryType, opts?: { filterUsed: true }) {
   const { query } = useRouter();
@@ -111,6 +113,7 @@ export function getCategoryInputCell<T extends object>(
       </div>
       {showSelector && (
         <CategorySelector
+          show={showSelector}
           selectedCategory={activeCategory}
           type={type}
           onClose={() => setShowSelector(false)}
@@ -129,7 +132,19 @@ export function getCategoryInputCell<T extends object>(
   );
 }
 
+const CategorySelector = (props: CategorySelectorProps) => {
+  const isMobile = useIsMobile();
+  return isMobile ? (
+    <BottomSheet isOpen={props.show} onClose={props.onClose}>
+      <CategorySelectorComponent {...props} />
+    </BottomSheet>
+  ) : (
+    props.show && <CategorySelectorComponent {...props} />
+  );
+};
+
 interface CategorySelectorProps {
+  show: boolean;
   selectedCategory?: Category;
   type: CategoryType;
   onClose: () => void;
@@ -138,7 +153,7 @@ interface CategorySelectorProps {
   onSelectCategory: (category: Category) => void;
 }
 
-const CategorySelector = ({
+const CategorySelectorComponent = ({
   selectedCategory,
   type,
   onClose,
@@ -146,6 +161,7 @@ const CategorySelector = ({
   onRemoveCategory,
   onSelectCategory,
 }: CategorySelectorProps) => {
+  const isMobile = useIsMobile();
   const { filters } = useMonthlyFilters();
   const categories = useListCategories(type, { filterUsed: true });
   const deleteCategory = useDeleteCategory(type, filters);
@@ -201,7 +217,9 @@ const CategorySelector = ({
   return (
     <div
       ref={dropdownRootRef}
-      className="absolute left-0 top-0 z-10 flex w-64 flex-col border-gray-100 bg-white shadow outline-none"
+      className={`${
+        isMobile ? "w-full" : "absolute left-0 top-0 z-10 flex w-64"
+      } flex-col border-gray-100 bg-white shadow outline-none`}
     >
       <div className="flex h-10 items-center border-b border-gray-100 bg-gray-200 px-4">
         {selectedCategory ? (
@@ -220,7 +238,7 @@ const CategorySelector = ({
       <span className="px-4 py-2 text-xs text-gray-500">
         {getDropdownCopy(categories)}
       </span>
-      <ul className="max-h-[154px] overflow-auto pb-2">
+      <ul className={`${isMobile ? "" : "max-h-[154px] overflow-auto"} pb-2`}>
         {categories?.map((tag) => (
           <li
             tabIndex={0}
