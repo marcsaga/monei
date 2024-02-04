@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   NavigationMenu as UiNavigationMenu,
   NavigationMenuLink,
@@ -38,16 +37,15 @@ interface MenuLinkProps {
 const MenuLink = ({ href, children, linkBase }: MenuLinkProps) => {
   const router = useRouter();
   return (
-    <Link href={href}>
-      <NavigationMenuLink
-        className={`${
-          router.pathname.includes(linkBase)
-            ? "text-main-dark"
-            : "text-main-dark text-opacity-20"
-        } whitespace-nowrap font-medium transition-colors`}
-      >
-        {children}
-      </NavigationMenuLink>
-    </Link>
+    <NavigationMenuLink
+      href={href}
+      className={`${
+        router.pathname.includes(linkBase)
+          ? "text-main-dark"
+          : "text-main-dark text-opacity-20"
+      } whitespace-nowrap font-medium transition-colors`}
+    >
+      {children}
+    </NavigationMenuLink>
   );
 };
